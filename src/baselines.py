@@ -207,5 +207,46 @@ lookup = {
             "monsters": 65.6,
             "armor points": 473.7
         }
+    },
+    "HR": {
+        "medium": {
+            "shells": 640.1,
+            "hitscanner%": 14.3,
+            "bullet ratio": 2.4,
+            "hitscanners": 26.1,
+            "bullets": 432.0,
+            "armor ratio": 1.8,
+            "health ratio": 3.3,
+            "shell ratio": 3.5,
+            "health points": 600.9,
+            "monsters": 181.8,
+            "armor points": 327.5
+        },
+        "hard": {
+            "shells": 638.0,
+            "hitscanner%": 13.0,
+            "bullet ratio": 1.9,
+            "hitscanners": 29.1,
+            "bullets": 425.0,
+            "armor ratio": 1.4,
+            "health ratio": 2.5,
+            "shell ratio": 2.8,
+            "health points": 570.9,
+            "monsters": 224.2,
+            "armor points": 315.0
+        },
+        "easy": {
+            "shells": 617.5,
+            "hitscanner%": 16.3,
+            "bullet ratio": 3.8,
+            "hitscanners": 18.3,
+            "bullets": 424.4,
+            "armor ratio": 2.8,
+            "health ratio": 5.1,
+            "shell ratio": 5.5,
+            "health points": 577.5,
+            "monsters": 112.2,
+            "armor points": 308.7
+        }
     }
 }
