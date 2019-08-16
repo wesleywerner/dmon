@@ -117,7 +117,7 @@ Bullet ratio is the number of bullets for every monster.
 Shell ratio is the number of shells for every monster.
 
 **FLAGS**
-This column shows flags raised when the output is compared to the baseline, which is DOOM2 by default.
+This column shows flags raised when results fall outside the baseline, which is DOOM2 by default.
 If you add the `--legend` option then the recommendation legend prints at the end of the output:
 
     H: Health ratio is too low
@@ -126,8 +126,8 @@ If you add the `--legend` option then the recommendation legend prints at the en
     s: Shell ratio is too low
     !: Hitscanner percentage is too high
 
-We can see that E1M9 has less health and armor than the DOOM2 average.
-When tweaking a map to meet the baseline, use the `--compare` option to print actual/baseline values:
+When tweaking a map to meet the baseline, use the `--compare` option to print actual/baseline values.
+Now we can see that E1M9 has less health and armor than the DOOM2 average:
 
     $ dmon doom.wad E1M9 --compare
     [doom.wad E1M9 versus DOOM2]
@@ -136,11 +136,20 @@ When tweaking a map to meet the baseline, use the `--compare` option to print ac
     medium    36/35      3/4      2/3      6/4      2/2      HA!
     hard      33/32      2/3      1/2      4/3      2/2      HA!
 
+Another view to distinguish variance is the `--diff` option, which shows the difference between actual and baseline:
 
+    $ dmon doom.wad E1M9 --diff
+    [doom.wad E1M9 versus DOOM2]
+    SKILL    HSCAN%  HEALTH^   ARMOR^  BULLET^   SHELL^    FLAGS
+    easy        -15       -1       -2       +6       -2      HAs
+    medium       +1       -1       -1       +2        0      HA!
+    hard         +1       -1       -1       +1       +0      HA!
 
+This gives a clear difference, if you want to increase the precision add the `--fixed` option to enable fixed-point float numbers.
 
+## MORE EXAMPLES
 
-Calculate and average statistics across all DOOM2 maps:
+Average for all DOOM2 maps:
 
     $ dmon DOOM2.WAD --average
 
@@ -148,7 +157,7 @@ Show stats for maps 1-4 counting bonus items, with legend:
 
     $ dmon DOOM2.WAD MAP0[1234] --legend --bonus
 
-Dump of all values in comma-separated-values format:
+Dump all values to csv:
 
     $ dmon DOOM2.WAD --format=csv
 
@@ -157,13 +166,13 @@ side-by-side for comparison - great for optimizing your map:
 
     $ dmon MYAWESOMEMAP.WAD --compare
 
-
 # BASELINES
 
-Generate a new baseline by giving the `--average --format=dump` parameters.
-The entry can be added to the `baselines.py` source file. Pull requests welcome.
+Generate a new baseline by giving the `--average --format=dump` options. The entry can be added to the `baselines.py` source file. Pull requests are welcome.
 
 # TESTS
+
+A small collection of unit tests are implemented for regression testing.
 
     $ python tests.py -v
     Baseline expected keys exist ... ok
@@ -191,6 +200,10 @@ The entry can be added to the `baselines.py` source file. Pull requests welcome.
     Ran 20 tests in 0.193s
 
     OK
+
+# CREDITS
+
+Credit to [Omgifol](https://sourceforge.net/projects/omgifol/), A Python library for manipulation of WAD files. Copyright (c) 2005 Fredrik Johansson
 
 # LICENSE
 
