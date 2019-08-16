@@ -345,10 +345,7 @@ def derive_recommendations (map_data, skill, options):
 
     rec_codes = ""
     map_data[skill]["flags"] = rec_codes
-
     baseline = load_baseline(options)
-    if baseline is None:
-        return
 
     health_ratio = map_data[skill]["health ratio"]
     armor_ratio = map_data[skill]["armor ratio"]
@@ -428,7 +425,11 @@ def process_wad(options):
 
 def load_baseline(options):
     code = options["--baseline"].upper()
-    return baselines.lookup.get(code, None)
+    if code in baselines.lookup:
+        return baselines.lookup.get(code, None)
+    else:
+        print("error: %s is not a valid baseline code" % (code))
+        sys.exit(255)
 
 
 def format_as_table (columns, rows):
@@ -493,10 +494,9 @@ def to_tabular (wad_data, options):
     column_names = ("hitscanner%", "health ratio", "armor ratio",
                     "bullet ratio", "shell ratio")
 
-    # load the baseline stats
+    cmp_mode = options["--compare"]
+    diff_mode = options["--diff"]
     baseline = load_baseline(options)
-
-    # order of skills printed
     skill_order = ("easy", "medium", "hard")
 
     output = ""
@@ -505,11 +505,12 @@ def to_tabular (wad_data, options):
         map_data = wad_data["data"][map_name]
 
         # title
-        if options["--compare"] and baseline:
-            output += ("[%s %s versus %s]\n" %
-                (wad_data["filename"], map_name, options["--baseline"]))
+        if cmp_mode or diff_mode:
+            fmt_values = (wad_data["filename"], map_name, options["--baseline"])
+            output += "[%s %s versus %s]\n" % fmt_values
         else:
-            output += ("[%s %s]\n" % (wad_data["filename"], map_name))
+            fmt_values = (wad_data["filename"], map_name)
+            output += "[%s %s]\n" % fmt_values
 
         rows = []
         for skill in skill_order:
@@ -531,20 +532,20 @@ def to_tabular_average (wad_data, options):
     column_names = ("hitscanner%", "health ratio", "armor ratio",
                     "bullet ratio", "shell ratio")
 
-    # load the baseline stats
+    cmp_mode = options["--compare"]
+    diff_mode = options["--diff"]
     baseline = load_baseline(options)
-
-    # order of skills printed
     skill_order = ("easy", "medium", "hard")
 
     output = ""
 
     # title
-    if options["--compare"] and baseline:
-        output += ("[%s versus %s]\n" %
-            (wad_data["filename"], options["--baseline"]))
+    if cmp_mode or diff_mode:
+        fmt_values = (wad_data["filename"], options["--baseline"])
+        output += "[%s versus %s]\n" % fmt_values
     else:
-        output += ("[%s]\n" % (wad_data["filename"]))
+        fmt_values = (wad_data["filename"])
+        output += "[%s]\n" % fmt_values
 
     data = wad_data["average"]
     rows = []
@@ -623,8 +624,6 @@ def print_legend_flags(options):
     Print the list of recommendation flags with baseline values.
     """
     baseline = load_baseline(options)
-    if not baseline:
-        return
     print("%s: Health ratio is too low" % (constants.RECOMMENDS_HP))
     print("%s: Armor ratio is too low" % (constants.RECOMMENDS_AP))
     print("%s: Bullet ratio is too low" % (constants.RECOMMENDS_BULLETS))
