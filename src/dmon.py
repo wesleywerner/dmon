@@ -36,6 +36,7 @@ Options:
 
 
 import sys
+import numbers
 import os.path
 from docopt import docopt
 import constants
@@ -454,10 +455,43 @@ def format_digit (number, options):
         return str(int(round(number)))
 
 
+def format_row (row_data, column_names, options, baseline_skill):
+    """
+    Formats multiple data columns into a row object.
+    eg returns [1.2, 3.5, 4.2, ...] (for fixed-point format)
+               [1, 4, 4, ...] (for defafult format)
+               [1/2, 4/4, 4/2, ...] (for comparison format)
+    """
+    row = []
+    diff_mode = options["--diff"]
+    cmp_mode = options["--compare"]
+    for col_key in column_names:
+        value = row_data[col_key]
+        if isinstance(value, numbers.Number):
+            if diff_mode:
+                # as the difference between the baseline
+                delta = value - baseline_skill[col_key]
+                value = format_digit(delta, options)
+                # prefix with the sign
+                if delta > 0:
+                    value = "+" + value
+            else:
+                # numbers get formatted according to options
+                value = format_digit(value, options)
+        # include comparisons
+        if cmp_mode:
+            value += "/"
+            value += format_digit(baseline_skill[col_key], options)
+        row.append(value)
+    return row
+
+
 def to_tabular (wad_data, options):
 
-    columns = ["SKILL", "HSCAN%", "HEALTH^", "ARMOR^",
-               "BULLET^", "SHELL^", "FLAGS"]
+    column_titles = ["SKILL", "HSCAN%", "HEALTH^", "ARMOR^",
+                     "BULLET^", "SHELL^", "FLAGS"]
+    column_names = ("hitscanner%", "health ratio", "armor ratio",
+                    "bullet ratio", "shell ratio")
 
     # load the baseline stats
     baseline = load_baseline(options)
@@ -477,44 +511,25 @@ def to_tabular (wad_data, options):
         else:
             output += ("[%s %s]\n" % (wad_data["filename"], map_name))
 
-        # each skill row
         rows = []
         for skill in skill_order:
-            skill_data = map_data[skill]
+            one_row = format_row (map_data[skill], column_names, options, baseline[skill])
+            # insert and append the skill and flag values
+            one_row.insert(0, skill)
+            one_row.append(map_data[skill]["flags"])
+            rows.append(one_row)
 
-            sk_hitscan = format_digit(skill_data["hitscanner%"], options)
-            sk_health = format_digit(skill_data["health ratio"], options)
-            sk_armor = format_digit(skill_data["armor ratio"], options)
-            sk_bullet = format_digit(skill_data["bullet ratio"], options)
-            sk_shell = format_digit(skill_data["shell ratio"], options)
-            sk_recom = skill_data["flags"]
-
-            # add limit value
-            if baseline and options["--compare"]:
-                bl_hitscan = format_digit(baseline[skill]["hitscanner%"], options)
-                bl_health = format_digit(baseline[skill]["health ratio"], options)
-                bl_armor = format_digit(baseline[skill]["armor ratio"], options)
-                bl_bullet = format_digit(baseline[skill]["bullet ratio"], options)
-                bl_shell = format_digit(baseline[skill]["shell ratio"], options)
-
-                sk_hitscan += "/" + bl_hitscan
-                sk_health += "/" + bl_health
-                sk_armor += "/" + bl_armor
-                sk_bullet += "/" + bl_bullet
-                sk_shell += "/" + bl_shell
-
-            rows.append([skill, sk_hitscan, sk_health,
-                      sk_armor, sk_bullet, sk_shell, sk_recom])
-
-        output += format_as_table(columns, rows)
+        output += format_as_table(column_titles, rows)
 
     return output
 
 
 def to_tabular_average (wad_data, options):
 
-    columns = ["SKILL", "HSCAN%", "HEALTH^", "ARMOR^",
-                "BULLET^", "SHELL^"]
+    column_titles = ["SKILL", "HSCAN%", "HEALTH^", "ARMOR^",
+                     "BULLET^", "SHELL^"]
+    column_names = ("hitscanner%", "health ratio", "armor ratio",
+                    "bullet ratio", "shell ratio")
 
     # load the baseline stats
     baseline = load_baseline(options)
@@ -531,35 +546,15 @@ def to_tabular_average (wad_data, options):
     else:
         output += ("[%s]\n" % (wad_data["filename"]))
 
-    # each skill row
+    data = wad_data["average"]
     rows = []
     for skill in skill_order:
-        avg_data = wad_data["average"][skill]
+        one_row = format_row (data[skill], column_names, options, baseline[skill])
+        # insert the skill value
+        one_row.insert(0, skill)
+        rows.append(one_row)
 
-        sk_hitscan = str(format_digit(avg_data["hitscanner%"], options))
-        sk_health = str(format_digit(avg_data["health ratio"], options))
-        sk_armor = str(format_digit(avg_data["armor ratio"], options))
-        sk_bullet = str(format_digit(avg_data["bullet ratio"], options))
-        sk_shell = str(format_digit(avg_data["shell ratio"], options))
-
-        # add limit value
-        if baseline and options["--compare"]:
-            bl_hitscan = str(format_digit(baseline[skill]["hitscanner%"], options))
-            bl_health = str(format_digit(baseline[skill]["health ratio"], options))
-            bl_armor = str(format_digit(baseline[skill]["armor ratio"], options))
-            bl_bullet = str(format_digit(baseline[skill]["bullet ratio"], options))
-            bl_shell = str(format_digit(baseline[skill]["shell ratio"], options))
-
-            sk_hitscan += "/" + bl_hitscan
-            sk_health += "/" + bl_health
-            sk_armor += "/" + bl_armor
-            sk_bullet += "/" + bl_bullet
-            sk_shell += "/" + bl_shell
-
-        rows.append([skill, sk_hitscan, sk_health,
-                  sk_armor, sk_bullet, sk_shell])
-
-    output += format_as_table(columns, rows)
+    output += format_as_table(column_titles, rows)
 
     return output
 
