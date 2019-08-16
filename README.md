@@ -1,22 +1,26 @@
 # dmon
 
+WAD analysis tool and toughness estimation of DOOM maps.
+
 # INSTALLATION
 
-You will need python 2.7 available in your environment.
+Download the latest build from [gitHub](https://github.com/wesleywerner/dmon/releases/latest).
 
 *GNU / Linux*
 
-Add an alias to your `.bash_profile`:
+You will need python 2.7 installed. Add an alias to your `.bash_profile`:
 
     alias dmon='python ~/path_to/dmon.py'
 
-You can call `dmon` from any directory.
+Then you can call `dmon` from any directory.
 
 *Windows*
 
-Add the dmon directory to your `%PATH%` environment variable
-and call `dmon.bat` (or just `dmon`).
+You can opt to run from source if you have python 2.7 installed (see http://winpython.github.io/).
 
+Alternatively a windows binary is available built with py2exe. It requires Microsoft Visual C++ 2008 Redistributable installed from https://www.microsoft.com/en-us/download/details.aspx?id=29
+
+Add the extracted Dmon directory (source and binary editions) to your `%PATH%` environment variable and call `dmon`. There is a `dmon.bat` file that acts as the launcher to run from source in Windows.
 
 # USAGE
 
@@ -206,6 +210,8 @@ A small collection of unit tests are implemented for regression testing.
 Credit to [Omgifol](https://sourceforge.net/projects/omgifol/), A Python library for manipulation of WAD files. Copyright (c) 2005 Fredrik Johansson
 
 # LICENSE
+
+Copyright (c) 2019 Wesley (beast) Werner
 
 Permission is hereby granted, free of charge, to any person obtaining a
 copy of this software and associated documentation files (the "Software"),
