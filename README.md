@@ -4,7 +4,7 @@ WAD analysis tool and toughness estimation of DOOM maps.
 
 # INSTALLATION
 
-Download the latest build from [gitHub](https://github.com/wesleywerner/dmon/releases/latest).
+Download the latest build from [github](https://github.com/wesleywerner/dmon/releases/latest).
 
 *GNU / Linux*
 
@@ -16,11 +16,15 @@ Then you can call `dmon` from any directory.
 
 *Windows*
 
-You can opt to run from source if you have python 2.7 installed (see http://winpython.github.io/).
+You can opt to run from source if you have python 2.7 installed - see [winpython](http://winpython.github.io).
 
-Alternatively a windows binary is available built with py2exe. It requires Microsoft Visual C++ 2008 Redistributable installed from https://www.microsoft.com/en-us/download/details.aspx?id=29
+Alternatively a windows binary is available built with py2exe. It requires [Microsoft Visual C++ 2008 Redistributable](https://www.microsoft.com/en-us/download/details.aspx?id=29) installed.
 
 Add the extracted Dmon directory (source and binary editions) to your `%PATH%` environment variable and call `dmon`. There is a `dmon.bat` file that acts as the launcher to run from source in Windows.
+
+# ISSUES
+
+Please report any issues in the [issue tracker](https://github.com/wesleywerner/dmon/issues) or on the Doomworld forums.
 
 # USAGE
 
@@ -30,28 +34,35 @@ Add the extracted Dmon directory (source and binary editions) to your `%PATH%` e
     Usage:
       dmon <wad> [options]
       dmon <wad> <pattern> [options]
-      dmon (-h | --help | --about | --license | --examples)
+      dmon (-h | --help | --about | --license)
 
     Options:
       -h --help                 Show this screen.
       --version                 Show current version.
       --license                 Print the license.
       --about                   Show how this all works.
-      --examples                Show me some examples.
       <pattern>                 match map name (E1M2 or MAP02)
                                 '?' and '*' are wildcards eg:
                                     E1M* (all episode 1)
                                     MAP0[135] (MAP01, MAP03 and MAP05)
-      -a, --average             Combine results into an average total.
-      -b, --bonus               Include berserk, soulsphere and megesphere
+      -a, --average             Combine results from multiple maps into
+                                average amounts.
+      -u, --bonus               Include berserk, soulsphere and megesphere
                                 as data points.
+      -f <fmt>, --format=<fmt>  Set output format to: csv, json, dump
+      -b, --baseline=<bl>       Set comparison baseline [Default: DOOM2]
+                                where <bl> can be:
+                                    DOOM, DOOM2, SIGIL,
+                                    AV (Alien Vendetta),
+                                    HR (HELL REVEALED),
+                                    DTWID (Doom the Way id Did)
       -c, --compare             Show actual/baseline values for comparison.
-      -f <fmt>, --format=<fmt>  Set the output format to "csv" or "json".
-      --baseline=<bl>           Set the comparison baseline [Default: DOOM2]
-                                Other values of <bl> are:
-                                    DOOM, SIGIL, AV (Alien Vendetta),
-                                    HR (HELL REVEALED)
+      -d, --diff                Display the difference between actual and
+                                baseline values.
+      -x, --fixed               Display fixed-point numbers (otherwise
+                                numbers are rounded up).
       -l, --legend              Print the recommendation legend at the end.
+
 
 # ABOUT
 
@@ -169,10 +180,6 @@ Show stats for all maps implemented in your PWAD, with baseline values
 side-by-side for comparison - great for optimizing your map:
 
     $ dmon MYAWESOMEMAP.WAD --compare
-
-# BASELINES
-
-Generate a new baseline by giving the `--average --format=dump` options. The entry can be added to the `baselines.py` source file. Pull requests are welcome.
 
 # TESTS
 
