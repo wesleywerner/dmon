@@ -31,6 +31,7 @@ Options:
   -x, --fixed               Display fixed-point numbers (otherwise
                             numbers are rounded up).
   -l, --legend              Print the recommendation legend at the end.
+  --verbose                 Output debug messages.
 
 """
 
@@ -165,6 +166,17 @@ def extract_statistics (options):
     # iterate each map in the map pattern
     for map_name in wad.maps.find(map_pattern):
 
+        if options["--verbose"]:
+            print("Loading map " + map_name)
+
+        # use the map editor object to interrogate things
+        try:
+            edit = omg.MapEditor(wad.maps[map_name])
+        except KeyError:
+            if options["--verbose"]:
+                print("Skipping {map_name} Lump".format(map_name=map_name))
+            continue
+
         # store the map data in wad stat
         map_data = new_map_data_object()
         wad_data["map list"].append(map_name)
@@ -176,9 +188,6 @@ def extract_statistics (options):
             "medium": map_data["medium"],
             "hard": map_data["hard"]
             }
-
-        # use the map editor object to interrogate things
-        edit = omg.MapEditor(wad.maps[map_name])
 
         for thing in edit.things:
 
