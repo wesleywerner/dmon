@@ -13,6 +13,8 @@ Generate a new baseline by giving the `--average --format=dump` options. The ent
 
 # FREEZING
 
+Install py2exe via `pip install py2exe` or install it manually as per below.
+
 **initial windows setup**
 
 1. Install [winpython](http://winpython.github.io/) - python 2.7
@@ -20,8 +22,9 @@ Generate a new baseline by giving the `--average --format=dump` options. The ent
 
 **packaging**
 
-1. Run `python setup.py py2exe`
-2. Rename `dist` directory to `dmon-1.n_win` and `zip` it
+1. Run `python setup.py py2exe` from `src`
+2. Rename the `dist/dmon-1.n_win` directory to match the built version
+3. `zip` the directory
 
 # BYTE-ORDER FIX IN OMG
 
