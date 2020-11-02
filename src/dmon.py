@@ -19,7 +19,7 @@ Options:
   -u, --bonus               Include berserk, soulsphere and megesphere
                             as data points.
   -f <fmt>, --format=<fmt>  Set output format to: csv, json, dump
-  -b, --baseline=<bl>       Set comparison baseline [Default: DOOM2]
+  -b <bl>, --baseline=<bl>  Set comparison baseline [Default: DOOM2]
                             where <bl> can be:
                                 DOOM, DOOM2, SIGIL,
                                 AV (Alien Vendetta),
@@ -31,6 +31,9 @@ Options:
   -x, --fixed               Display fixed-point numbers (otherwise
                             numbers are rounded up).
   -l, --legend              Print the recommendation legend at the end.
+  -p, --pivot               Pivot the output so that statistics are listed
+                            as columns instead of rows.
+                            Only applies when --format is not set.
   --verbose                 Output debug messages.
 
 """
@@ -415,9 +418,9 @@ def process_wad(options):
     fmt = options["--format"]
     if fmt is None:
         if options["--average"] == True:
-            print(to_tabular_average(wad_data, options))
+            print(to_tabular(wad_data, options, True))
         else:
-            print(to_tabular(wad_data, options))
+            print(to_tabular(wad_data, options, False))
     elif fmt == "csv":
         print(to_csv(wad_data, options))
     elif fmt == "json":
@@ -441,14 +444,14 @@ def load_baseline(options):
         sys.exit(255)
 
 
-def format_as_table (columns, rows):
+def format_as_table (columns, rows, first_column_width=6):
     """Formats fixed width columns."""
     # build the format string that pads and aligns our columns
     fmts = ""
     for i, c in enumerate(columns):
         if i == 0:
             # first column is left-aligned
-            fmts += "{:<6}"
+            fmts += "{:<"+str(first_column_width)+"}"
         else:
             # others right-aligned
             fmts += "{:>9}"
@@ -496,15 +499,36 @@ def format_row (row_data, column_names, options, baseline_skill):
     return row
 
 
-def to_tabular (wad_data, options):
+def to_tabular (wad_data, options, list_averages):
+    """
+    Generates a tabular output string from generated statistics.
+    Each map is generated in turn (where PATTERN is matched).
+    If list_averages is Truthy then the average data is used and
+    the map loop is broken early.
+    """
 
-    column_titles = ["SKILL", "HSCAN%", "HEALTH^", "ARMOR^",
-                     "BULLET^", "SHELL^", "FLAGS"]
+    # titles for all statistics
+    row_titles = ["HIT SCAN %", "HEALTH ^", "ARMOR ^",
+                    "BULLETS ^", "SHELLS ^", "FLAGS"]
+    
+    # column titles for horizontal output
+    h_column_titles = ["SKILL", "HSCAN%", "HEALTH^", "ARMOR^",
+                    "BULLET^", "SHELL^", "FLAGS"]
+    
+    # column titles for each skill
+    column_titles = ["", "EASY", "MEDIUM", "HARD"]
+    
+    # keys of statistics data structure that map to each title
     column_names = ("hitscanner%", "health ratio", "armor ratio",
                     "bullet ratio", "shell ratio")
+    
+    # Format width of first column.
+    # This will be smaller for pivoted output.
+    first_column_width = 12
 
     cmp_mode = options["--compare"]
     diff_mode = options["--diff"]
+    pivoted_mode = options["--pivot"]
     baseline = load_baseline(options)
     skill_order = ("easy", "medium", "hard")
 
@@ -512,59 +536,61 @@ def to_tabular (wad_data, options):
 
     for map_name in wad_data["map list"]:
         map_data = wad_data["data"][map_name]
+        
+        # Override the map dataset if listing averages.
+        if list_averages:
+            map_data = wad_data["average"]
 
-        # title
+        # Print file and map names
         if cmp_mode or diff_mode:
             fmt_values = (wad_data["filename"], map_name, options["--baseline"])
-            output += "[%s %s versus %s]\n" % fmt_values
+            output += "\n[%s %s versus %s]\n" % fmt_values
         else:
             fmt_values = (wad_data["filename"], map_name)
-            output += "[%s %s]\n" % fmt_values
+            output += "\n[%s %s]\n" % fmt_values
 
         rows = []
-        for skill in skill_order:
-            one_row = format_row (map_data[skill], column_names, options, baseline[skill])
-            # insert and append the skill and flag values
-            one_row.insert(0, skill)
-            one_row.append(map_data[skill]["flags"])
-            rows.append(one_row)
+        
+        # Pivot the output so that statistics are listed
+        # as columns instead of rows.
+        if pivoted_mode:
+            # Switch the column titles for horizontal display
+            column_titles = h_column_titles
+            first_column_width = 6
+            # Averages don't have FLAGS, remove the column
+            if list_averages:
+                column_titles.pop()
+            for skill in skill_order:
+                this_row = format_row (map_data[skill], column_names, options, baseline[skill])
+                # Insert the skill name
+                this_row.insert(0, skill)
+                # Append FLAGS when not listing averages
+                if not list_averages:
+                    this_row.append(map_data[skill]["flags"])
+                rows.append(this_row)
+        else:
+            # List each statistic as a row
+            for i, column in enumerate(column_names):
+                # Add the stat title
+                this_row = [row_titles[i],]
+                # Add the values for this stat from each skill level
+                for skill in skill_order:
+                    skill_data = format_row(map_data[skill], column_names, options, baseline[skill])
+                    this_row.append(skill_data[i])
+                rows.append(this_row)
 
-        output += format_as_table(column_titles, rows)
+            # Append FLAGS when not listing averages
+            if not list_averages:
+                flags_row = ["FLAGS"]
+                for skill in skill_order:
+                    flags_row.append(map_data[skill]["flags"])
+                rows.append(flags_row)
+                
+        output += format_as_table(column_titles, rows, first_column_width)
 
-    return output
-
-
-def to_tabular_average (wad_data, options):
-
-    column_titles = ["SKILL", "HSCAN%", "HEALTH^", "ARMOR^",
-                     "BULLET^", "SHELL^"]
-    column_names = ("hitscanner%", "health ratio", "armor ratio",
-                    "bullet ratio", "shell ratio")
-
-    cmp_mode = options["--compare"]
-    diff_mode = options["--diff"]
-    baseline = load_baseline(options)
-    skill_order = ("easy", "medium", "hard")
-
-    output = ""
-
-    # title
-    if cmp_mode or diff_mode:
-        fmt_values = (wad_data["filename"], options["--baseline"])
-        output += "[%s versus %s]\n" % fmt_values
-    else:
-        fmt_values = (wad_data["filename"])
-        output += "[%s]\n" % fmt_values
-
-    data = wad_data["average"]
-    rows = []
-    for skill in skill_order:
-        one_row = format_row (data[skill], column_names, options, baseline[skill])
-        # insert the skill value
-        one_row.insert(0, skill)
-        rows.append(one_row)
-
-    output += format_as_table(column_titles, rows)
+        # Stop processing if listing averages, as it only has one set of values.
+        if list_averages:
+            break
 
     return output
 
