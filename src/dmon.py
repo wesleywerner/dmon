@@ -488,10 +488,10 @@ def format_row (row_data, column_names, options, baseline_skill):
             else:
                 # numbers get formatted according to options
                 value = format_digit(value, options)
-        # include comparisons
-        if cmp_mode:
-            value += "/"
-            value += format_digit(baseline_skill[col_key], options)
+                # include comparisons
+                if cmp_mode:
+                    value += "/"
+                    value += format_digit(baseline_skill[col_key], options)
         row.append(value)
     return row
 
