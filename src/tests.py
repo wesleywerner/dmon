@@ -64,6 +64,7 @@ TextTestResult.getDescription = lambda _, test: test.shortDescription()
 
 import unittest
 import baselines
+import dmoncommon
 import dmon
 
 class TestWADExtractionMethods(unittest.TestCase):
@@ -71,14 +72,14 @@ class TestWADExtractionMethods(unittest.TestCase):
     def test_extraction_returns_stats(self):
         """Extraction returns statistics object"""
         options = dmon.docopt(dmon.__doc__, argv=["test.wad", "MAP01"])
-        wad_stats = dmon.extract_statistics(options)
+        wad_stats = dmoncommon.extract_statistics(options)
         self.assertIsNotNone(wad_stats, "extract_statistics gave back None")
         self.assertIsNotNone(wad_stats["map list"])
 
     def test_hitscanners(self):
         """Count hitscanners"""
         options = dmon.docopt(dmon.__doc__, argv=["test.wad", "MAP01"])
-        wad_stats = dmon.extract_statistics(options)
+        wad_stats = dmoncommon.extract_statistics(options)
         map_data = wad_stats["data"]["MAP01"]
         easy_data = map_data["easy"]
         expected = 5
@@ -88,7 +89,7 @@ class TestWADExtractionMethods(unittest.TestCase):
     def test_meaty(self):
         """Count meaty monsters"""
         options = dmon.docopt(dmon.__doc__, argv=["test.wad", "MAP01"])
-        wad_stats = dmon.extract_statistics(options)
+        wad_stats = dmoncommon.extract_statistics(options)
         map_data = wad_stats["data"]["MAP01"]
         easy_data = map_data["easy"]
         expected = 13
@@ -98,7 +99,7 @@ class TestWADExtractionMethods(unittest.TestCase):
     def test_shells(self):
         """Count shells"""
         options = dmon.docopt(dmon.__doc__, argv=["test.wad", "MAP01"])
-        wad_stats = dmon.extract_statistics(options)
+        wad_stats = dmoncommon.extract_statistics(options)
         map_data = wad_stats["data"]["MAP01"]
         easy_data = map_data["easy"]
         expected = 48
@@ -108,7 +109,7 @@ class TestWADExtractionMethods(unittest.TestCase):
     def test_bullets(self):
         """Count bullets"""
         options = dmon.docopt(dmon.__doc__, argv=["test.wad", "MAP01"])
-        wad_stats = dmon.extract_statistics(options)
+        wad_stats = dmoncommon.extract_statistics(options)
         map_data = wad_stats["data"]["MAP01"]
         easy_data = map_data["easy"]
         expected = 145
@@ -118,7 +119,7 @@ class TestWADExtractionMethods(unittest.TestCase):
     def test_health_points(self):
         """Count health points"""
         options = dmon.docopt(dmon.__doc__, argv=["test.wad", "MAP01"])
-        wad_stats = dmon.extract_statistics(options)
+        wad_stats = dmoncommon.extract_statistics(options)
         map_data = wad_stats["data"]["MAP01"]
         easy_data = map_data["easy"]
         expected = 36
@@ -128,7 +129,7 @@ class TestWADExtractionMethods(unittest.TestCase):
     def test_health_points_with_bonus(self):
         """Count health points including bonus items"""
         options = dmon.docopt(dmon.__doc__, argv=["test.wad", "MAP01", "--bonus"])
-        wad_stats = dmon.extract_statistics(options)
+        wad_stats = dmoncommon.extract_statistics(options)
         map_data = wad_stats["data"]["MAP01"]
         easy_data = map_data["easy"]
         expected = 436
@@ -138,7 +139,7 @@ class TestWADExtractionMethods(unittest.TestCase):
     def test_armor_points(self):
         """Count armor points"""
         options = dmon.docopt(dmon.__doc__, argv=["test.wad", "MAP01"])
-        wad_stats = dmon.extract_statistics(options)
+        wad_stats = dmoncommon.extract_statistics(options)
         map_data = wad_stats["data"]["MAP01"]
         easy_data = map_data["easy"]
         expected = 301
@@ -148,7 +149,7 @@ class TestWADExtractionMethods(unittest.TestCase):
     def test_armor_points_with_bonus(self):
         """Count armor points including bonus items"""
         options = dmon.docopt(dmon.__doc__, argv=["test.wad", "MAP01", "--bonus"])
-        wad_stats = dmon.extract_statistics(options)
+        wad_stats = dmoncommon.extract_statistics(options)
         map_data = wad_stats["data"]["MAP01"]
         easy_data = map_data["easy"]
         expected = 501
@@ -158,7 +159,7 @@ class TestWADExtractionMethods(unittest.TestCase):
     def test_skill_variances(self):
         """Count items with varied skill flags"""
         options = dmon.docopt(dmon.__doc__, argv=["test.wad", "MAP02"])
-        wad_stats = dmon.extract_statistics(options)
+        wad_stats = dmoncommon.extract_statistics(options)
         map_data = wad_stats["data"]["MAP02"]
         easy_data = map_data["easy"]
         medium_data = map_data["medium"]
@@ -179,7 +180,7 @@ class TestDerivingMethods(unittest.TestCase):
     def test_hitscanner_percentage(self):
         """Derive hitscanner percentage"""
         options = dmon.docopt(dmon.__doc__, argv=["test.wad", "MAP01"])
-        wad_stats = dmon.extract_statistics(options)
+        wad_stats = dmoncommon.extract_statistics(options)
         map_data = wad_stats["data"]["MAP01"]
         easy_data = map_data["easy"]
         expected = 28   # round(5 / 18.0 * 100)
@@ -189,7 +190,7 @@ class TestDerivingMethods(unittest.TestCase):
     def test_armor_ratio(self):
         """Derive armor to monster ratio"""
         options = dmon.docopt(dmon.__doc__, argv=["test.wad", "MAP01"])
-        wad_stats = dmon.extract_statistics(options)
+        wad_stats = dmoncommon.extract_statistics(options)
         map_data = wad_stats["data"]["MAP01"]
         easy_data = map_data["easy"]
         expected = 16.7   # armor points / monsters (301 / 18)
@@ -199,7 +200,7 @@ class TestDerivingMethods(unittest.TestCase):
     def test_health_ratio(self):
         """Derive health to monster ratio"""
         options = dmon.docopt(dmon.__doc__, argv=["test.wad", "MAP01"])
-        wad_stats = dmon.extract_statistics(options)
+        wad_stats = dmoncommon.extract_statistics(options)
         map_data = wad_stats["data"]["MAP01"]
         easy_data = map_data["easy"]
         expected = 2   # health points / monsters (36 / 18)
@@ -209,7 +210,7 @@ class TestDerivingMethods(unittest.TestCase):
     def test_bullet_ratio(self):
         """Derive bullet to monster ratio"""
         options = dmon.docopt(dmon.__doc__, argv=["test.wad", "MAP01"])
-        wad_stats = dmon.extract_statistics(options)
+        wad_stats = dmoncommon.extract_statistics(options)
         map_data = wad_stats["data"]["MAP01"]
         easy_data = map_data["easy"]
         expected = 8.1   # bullets / monsters (145 / 18)
@@ -219,7 +220,7 @@ class TestDerivingMethods(unittest.TestCase):
     def test_shell_ratio(self):
         """Derive shell to monster ratio"""
         options = dmon.docopt(dmon.__doc__, argv=["test.wad", "MAP01"])
-        wad_stats = dmon.extract_statistics(options)
+        wad_stats = dmoncommon.extract_statistics(options)
         map_data = wad_stats["data"]["MAP01"]
         easy_data = map_data["easy"]
         expected = 2.7   # shells / monsters (48 / 18)
@@ -230,7 +231,7 @@ class TestDerivingMethods(unittest.TestCase):
         """Derive averages"""
         args = ["test.wad", "--average", "MAP0[12]"]
         options = dmon.docopt(dmon.__doc__, argv=args)
-        wad_stats = dmon.extract_statistics(options)
+        wad_stats = dmoncommon.extract_statistics(options)
         totals = wad_stats["totals"]
         expected_easy = 80
         expected_medium = 72
@@ -251,7 +252,7 @@ class TestDerivingMethods(unittest.TestCase):
         #~ hard       43.5      1.6     13.1      9.6      2.8
         args = ["test.wad", "--average", "MAP0[12]"]
         options = dmon.docopt(dmon.__doc__, argv=args)
-        wad_stats = dmon.extract_statistics(options)
+        wad_stats = dmoncommon.extract_statistics(options)
         avg = wad_stats["average"]
         expected_hitscan = 35.0
         expected_health = 1.8
