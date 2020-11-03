@@ -256,7 +256,7 @@ class TestDerivingMethods(unittest.TestCase):
         expected_hitscan = 35.0
         expected_health = 1.8
         expected_armor = 15.1
-        expected_bullet = 10.3
+        expected_bullet = 10.2
         expected_shell = 4.0
         self.assertEqual(avg["easy"]["hitscanner%"], expected_hitscan)
         self.assertEqual(avg["easy"]["health ratio"], expected_health)

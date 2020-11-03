@@ -13,22 +13,14 @@ Generate a new baseline by giving the `--average --format=dump` options. The ent
 
 # FREEZING
 
-Install py2exe via `pip install py2exe` or install it manually as per below.
+Install py2exe via the command below. If using WinPython open the `WinPython Command Prompt` which should have `pip` in its path.
 
-**initial windows setup**
+```
+pip install py2exe
+```
 
-1. Install [winpython](http://winpython.github.io/) - python 2.7
-2. Download [py2exe](http://py2exe.org/), extract it into `python\Lib`
-
-**packaging**
+To make a Windows binary:
 
 1. Run `python setup.py py2exe` from `src`
 2. Rename the `dist/dmon-1.n_win` directory to match the built version
 3. `zip` the directory
-
-# BYTE-ORDER FIX IN OMG
-
-The wad headers reported incorrectly on *nix systems due to it assuming a little-endian byte-order in the c types struct data.
-I forced little-endian order by prefixing the struct format with "<", resolving the issue.
-See https://docs.python.org/2/library/struct.html#struct-alignment
-and https://stackoverflow.com/a/36085069

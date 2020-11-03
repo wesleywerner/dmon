@@ -1,5 +1,6 @@
 import omg.palette
 import omg.lump
+from omg import six
 
 class Colormap:
     """An editor for Doom's COLORMAP lump. The colormap holds 34 tables
@@ -9,7 +10,7 @@ class Colormap:
 
     def __init__(self, from_lump=None):
         """Create new, optionally from an existing lump."""
-        self.tables = [[0]*256]*34
+        self.tables = [[0 for x in range(256)] for y in range(34)]
         if from_lump:
             self.from_lump(from_lump)
 
@@ -43,9 +44,22 @@ class Colormap:
         """Load from a COLORMAP lump."""
         assert len(lump.data) == 34*256
         for n in range(34):
-            self.tables[n] = [ord(lump.data[i]) for i in range(n*256,(n+1)*256)]
+            self.tables[n] = [six.indexbytes(lump.data, i) for i in range(n*256,(n+1)*256)]
 
     def to_lump(self):
         """Pack to a COLORMAP lump."""
-        packed = [''.join([chr(c) for c in t]) for t in self.tables]
-        return omg.lump.Lump(''.join(packed))
+        
+        output = bytes()
+        for t in self.tables:
+            for c in t:
+                output += six.int2byte(c)
+                
+        return omg.lump.Lump(output)
+        
+        # packed = [''.join([chr(c) for c in t]) for t in self.tables]
+        # return omg.lump.Lump(''.join(packed))
+        
+    def set_position(self,table,index,pal_index):
+        """Sets a specified position in the colormap to the specified
+        index in the playpal"""
+        self.tables[table][index] = pal_index

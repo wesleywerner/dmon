@@ -1,4 +1,5 @@
-from struct  import pack, unpack
+from omg      import six
+from struct   import pack, unpack
 from omg.util import *
 
 class Palette:
@@ -14,7 +15,7 @@ class Palette:
     probably isn't a good idea, however):
 
         .colors       List of (r, g, b) tuples
-        .bytes        Palette's colors as a string (rgbrgbrgb...)
+        .bytes        Palette's colors as a bytes object (rgbrgbrgb...)
         .save_bytes   Same as above, but with the transparency color set;
                       useful when saving files
         .tran_color   (r, g, b) value for transparency
@@ -31,22 +32,25 @@ class Palette:
     def __init__(self, colors=None, tran_index=None, tran_color=None):
 
         """Creates a new Palette object. The 'colors' argument may be
-        either a list of (r,g,b) tuples or an RGBRGBRGB... string.
+        either a list of (r,g,b) tuples or an RGBRGBRGB... string/bytes.
         'tran_index' specifies the index in the palette where the 
         transparent color should be placed. Note that this is only used
         when saving images, and thus doesn't affect color lookups.
         'tran_color' is the color to use for transparency."""
-
+
         colors = colors or default_colors
         tran_index = tran_index or default_tran_index
         tran_color = tran_color or default_tran_color
 
+        if isinstance(colors, str):
+            colors = six.b(colors)
+
         if isinstance(colors, list):
             self.colors = colors[:]
-        elif isinstance(colors, str):
-            self.colors = [unpack('BBB', colors[i:i+3]) for i in xrange(0,768,3)]
+        elif isinstance(colors, bytes):
+            self.colors = [unpack('BBB', colors[i:i+3]) for i in range(0,768,3)]
         else:
-            raise TypeError, "Argument 'colors' must be list or string"
+            raise TypeError("Argument 'colors' must be list or string or bytes")
 
         # Doom graphics don't actually use indices for transparency; the
         # following data is only used when converting between image formats.
@@ -62,12 +66,11 @@ class Palette:
         self.memo = {}
         self.bright_lut = []
         self.reset_memo()
-        self.build_lut()
 
     def make_bytes(self):
         """Create/update 'bytes' and 'save_bytes' from the current set of
         colors and the 'tran_index' and 'tran_color' fields."""
-        self.bytes = "".join([pack('BBB', *rgb) for rgb in self.colors])
+        self.bytes = bytes().join([pack('BBB', *rgb) for rgb in self.colors])
         self.save_bytes = \
             self.bytes[:self.tran_index*3] + \
             pack('BBB', *self.tran_color) + \
@@ -82,7 +85,7 @@ class Palette:
     def reset_memo(self):
         """Clear the memo table (but (re)add the palette's colors)"""
         self.memo = {}
-        for i in xrange(len(self.colors)):
+        for i in range(len(self.colors)):
             if i != self.tran_index:
                 self.memo[self.colors[i]] = i
 
@@ -100,7 +103,7 @@ class Palette:
         """
         self.bright_lut = []
         assert 0 <= distance <= 256
-        for level in xrange(256):
+        for level in range(256):
             candidates = []
             for j, rgb in enumerate(self.colors):
                 if abs(level - (sum(rgb) // 3)) < distance:
@@ -128,6 +131,8 @@ class Palette:
             return self.tran_index
         if color in self.memo:
             return self.memo[color]
+        if len(self.bright_lut) == 0:
+            self.build_lut()
         best_dist = 262144
         best_i = 0
         ar, ag, ab = color
@@ -154,7 +159,7 @@ class Palette:
         ng = color[1] * intensity
         nb = color[2] * intensity
         remain = 1.0 - intensity
-        for i in xrange(len(self.colors)):
+        for i in range(len(self.colors)):
             ar, ag, ab = self.colors[i]
             self.colors[i] = (int(ar*remain + nr),
                               int(ag*remain + ng),
@@ -162,7 +167,7 @@ class Palette:
         self.make_bytes()
         self.make_grays()
         self.reset_memo()
-        self.build_lut()
+        self.bright_lut = []
 
 # Colors of the Doom palette, used by default
 default_colors = (

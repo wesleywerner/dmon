@@ -21,13 +21,16 @@ class LumpGroup(OrderedDict):
         """Load entries from a WAD file. All lumps from the same
         section in that WAD is loaded (e.g. if this is a patch
         section, all patches in the WAD will be loaded."""
-        iw = WAD(); iw.load(filename)
-        self._lumps += deepcopy(iw.__dict__[self._sect_name]._lumps)
+        w = WAD(filename)
+        self += w.__dict__[self._name].copy()
 
-    def to_file(self, filename):
-        """Save group as a separate WAD file."""
+    def to_file(self, filename, use_free=True):
+        """Save group as a separate WAD file.
+        
+        If use_free is true, existing free space in the WAD will
+        be used, if possible."""
         w = WadIO(filename)
-        self.save_wadio(w)
+        self.save_wadio(w, use_free=use_free)
 
     def from_glob(self, globpattern):
         """Create lumps from files matching the glob pattern."""
@@ -35,10 +38,13 @@ class LumpGroup(OrderedDict):
             name = fixname(os.path.basename(p[:p.rfind('.')]))
             self[name] = self.lumptype(from_file=p)
 
-    def save_wadio(self, wadio):
-        """Save to a WadIO object."""
+    def save_wadio(self, wadio, use_free=True):
+        """Save to a WadIO object.
+        
+        If use_free is true, existing free space in the WAD will
+        be used, if possible."""
         for m in self:
-            wadio.insert(m, self[m].data)
+            wadio.insert(m, self[m].data, use_free=use_free)
 
     def copy(self):
         """Creates a deep copy."""
@@ -88,21 +94,23 @@ class MarkerGroup(LumpGroup):
                     inside = True
                     wadio.entries[i].been_read = True
 
-    def save_wadio(self, wadio):
-        """Save to a WadIO object."""
+    def save_wadio(self, wadio, use_free=True):
+        """Save to a WadIO object.
+        
+        If use_free is true, existing free space in the WAD will
+        be used, if possible."""
         if len(self) == 0:
             return
-        wadio.insert(self.prefix.replace('*', ''), '')
-        LumpGroup.save_wadio(self, wadio)
-        wadio.insert(self.suffix.replace('*', ''), '')
+        wadio.insert(self.prefix.replace('*', ''), bytes())
+        LumpGroup.save_wadio(self, wadio, use_free=use_free)
+        wadio.insert(self.suffix.replace('*', ''), bytes())
 
 
 class HeaderGroup(LumpGroup):
     """Group for lumps arranged header-tail (e.g. maps)"""
 
     def __init2__(self):
-        self.headers = self.config[0]
-        self.tail = self.config[1]
+        self.tail = self.config
 
     def load_wadio(self, wadio):
         """Load all matching lumps that have not already
@@ -115,28 +123,41 @@ class HeaderGroup(LumpGroup):
                 continue
             name = wadio.entries[i].name
             added = False
-            for head in self.headers:
-                if wccmp(name, head):
-                    added = True
-                    self[name] = NameGroup()
+            # now search only using tail lumps so that any map with map lumps is loaded correctly
+            # look for at least 2 tail lumps in order to avoid false positives
+            if i < numlumps - 2 \
+               and inwclist(wadio.entries[i + 1].name, self.tail) \
+               and inwclist(wadio.entries[i + 2].name, self.tail):
+                added = True
+                self[name] = NameGroup()
+                self[name]["_HEADER_"] = Lump(wadio.read(i))
+                wadio.entries[i].been_read = True
+                i += 1
+                while i < numlumps and inwclist(wadio.entries[i].name, self.tail):
+                    self[name][wadio.entries[i].name] = \
+                        self.lumptype(wadio.read(i))
                     wadio.entries[i].been_read = True
                     i += 1
-                    while i < numlumps and inwclist(wadio.entries[i].name, self.tail):
-                        self[name][wadio.entries[i].name] = \
-                            self.lumptype(wadio.read(i))
-                        wadio.entries[i].been_read = True
-                        i += 1
             if not added:
                 i += 1
 
-    def save_wadio(self, wadio):
-        """Save to a WadIO object."""
+    def save_wadio(self, wadio, use_free=True):
+        """Save to a WadIO object.
+        
+        If use_free is true, existing free space in the WAD will
+        be used, if possible."""
         for h in self:
             hs = self[h]
-            wadio.insert(h, "")
+            try:
+                wadio.insert(h, hs["_HEADER_"].data, use_free=use_free)
+            except KeyError:
+                wadio.insert(h, bytes())
             for t in self.tail:
-                if t in hs:
-                    wadio.insert(t, hs[t].data)
+                try:
+                    name = wcinlist(hs, t)[0]
+                    wadio.insert(name, hs[name].data, use_free=use_free)
+                except IndexError:
+                    pass
 
 
 class NameGroup(LumpGroup):
@@ -167,8 +188,6 @@ class TxdefGroup(NameGroup):
         a.from_lumps(self)
         a.from_lumps(other)
         return a.to_lumps()
-    def save_wadio(self, wadio):
-        NameGroup.save_wadio(self, wadio)
 
 
 #---------------------------------------------------------------------
@@ -177,12 +196,10 @@ class TxdefGroup(NameGroup):
 #
 
 # First some lists...
-_mapheaders = ['E?M?', 'MAP??*']
 _maptail    = ['THINGS',   'LINEDEFS', 'SIDEDEFS', # Must be in order
                'VERTEXES', 'SEGS',     'SSECTORS',
                'NODES',    'SECTORS',  'REJECT',
                'BLOCKMAP', 'BEHAVIOR', 'SCRIPT*']
-_glmapheaders = ['GL_E?M?', 'GL_MAP??']
 _glmaptail    = ['GL_VERT', 'GL_SEGS', 'GL_SSECT', 'GL_NODES']
 _graphics     = ['TITLEPIC', 'CWILV*', 'WI*', 'M_*',
                  'INTERPIC', 'BRDR*',  'PFUB?', 'ST*',
@@ -198,8 +215,8 @@ defstruct = [
     [MarkerGroup, 'flats',     Flat,    'F'],
     [MarkerGroup, 'colormaps', Lump,    'C'],
     [MarkerGroup, 'ztextures', Graphic, 'TX'],
-    [HeaderGroup, 'maps',   Lump, [_mapheaders, _maptail]],
-    [HeaderGroup, 'glmaps', Lump, [_glmapheaders, _glmaptail]],
+    [HeaderGroup, 'maps',   Lump, _maptail],
+    [HeaderGroup, 'glmaps', Lump, _glmaptail],
     [NameGroup,   'music',    Music, ['D_*']],
     [NameGroup,   'sounds',   Sound, ['DS*', 'DP*']],
     [TxdefGroup,  'txdefs',   Lump,  ['TEXTURE?', 'PNAMES']],
@@ -227,7 +244,7 @@ class WAD:
 
     Member data:
         .structure     Structure definition.
-        .palette       Palette (not implemented yet)
+        .palette       Palette
         .sprites, etc  Sections containing lumps, as specified by
                        the structure definition"""
 
@@ -258,7 +275,7 @@ class WAD:
             assert os.path.exists(source)
             w = WadIO(source)
         else:
-            raise TypeError, "Expected WadIO or file path string"
+            raise TypeError("Expected WadIO or file path string")
         for group in self.groups:
             group.load_wadio(w)
 
@@ -275,7 +292,7 @@ class WAD:
             os.rename(filename, tmpfilename)
         w = WadIO(filename)
         for group in write_order:
-            self.__dict__[group].save_wadio(w)
+            self.__dict__[group].save_wadio(w, use_free=False)
         w.save()
         if use_backup:
             os.remove(tmpfilename)

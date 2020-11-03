@@ -1,26 +1,43 @@
 # dmon
 
-WAD analysis tool and toughness estimation of DOOM maps.
+dmon is a WAD analysis tool that estimates the toughness of DOOM maps. It does this by adding up all health bonuses, ammo pickups and monster counts, then it compares those numbers against a preset baseline. This is useful for balancing your maps to closely match the said baseline.
+
+The default baseline is DOOM II, however this can changed with options. See USAGE below.
 
 # INSTALLATION
 
-Download the latest build from [github](https://github.com/wesleywerner/dmon/releases/latest).
+dmon is written in Python and targets version `3.8`, however it does run under Python `2.7` if you absolutely need it to.
 
-*GNU / Linux*
 
-You will need python 2.7 installed. Add an alias to your `.bash_profile`:
+*GNU / Linux or Mac*
 
-    alias dmon='python ~/path_to/dmon.py'
+You will need [Python](https://www.python.org/) installed.
 
-Then you can call `dmon` from any directory.
+Download and extract the latest source from [dmon/releases](https://github.com/wesleywerner/dmon/releases/latest), then run `python dmon.py` to invoke the magic.
+
+You can alias this command in your favorite shell to make this command available anywhere:
+
+```
+alias dmon='python ~/path_to/dmon.py'
+```
 
 *Windows*
 
-You can opt to run from source if you have python 2.7 installed - see [winpython](http://winpython.github.io).
+You can run from source or use the pre-built executable:
 
-Alternatively a windows binary is available built with py2exe. It requires [Microsoft Visual C++ 2008 Redistributable](https://www.microsoft.com/en-us/download/details.aspx?id=29) installed.
+*Windows Executable*
 
-Add the extracted Dmon directory (source and binary editions) to your `%PATH%` environment variable and call `dmon`. There is a `dmon.bat` file that acts as the launcher to run from source in Windows.
+Download and extract the latest build from [dmon/releases](https://github.com/wesleywerner/dmon/releases/latest). Create a new application shortcut with the below command. It runs a console window with dmon in its path:
+
+```
+cmd.exe /k set PATH=C:\Path\To\dmon-1.1_win;%PATH%
+```
+
+*Windows Source*
+
+To run from source you need [Python](https://www.python.org/). Either install the official package, or use [WinPython](http://winpython.github.io) for an install-free experience. *Be sure to include Python in your PATH environment*, or use the `WinPython Command Prompt`.
+
+Add the extracted Dmon `src` directory to your `PATH` environment variable and run `dmon`. There is a `dmon.bat` file that acts as the launcher to run from source in Windows.
 
 # ISSUES
 
@@ -214,7 +231,7 @@ A small collection of unit tests are implemented for regression testing.
 
 # CREDITS
 
-Credit to [Omgifol](https://sourceforge.net/projects/omgifol/), A Python library for manipulation of WAD files. Copyright (c) 2005 Fredrik Johansson
+dmon uses [Omgifol](https://github.com/devinacker/omgifol), A Python library for manipulation of WAD files. Copyright (c) 2005 Fredrik Johansson, 2017 Devin Acker.
 
 # LICENSE
 
