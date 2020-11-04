@@ -94,7 +94,7 @@ def format_as_table(columns, rows, first_column_width=6):
             fmts += "{:<"+str(first_column_width)+"}"
         else:
             # others right-aligned
-            fmts += "{:>9}"
+            fmts += "{:>12}"
     output = fmts.format(*columns) + "\n"
     for values in rows:
         output += fmts.format(*values) + "\n"

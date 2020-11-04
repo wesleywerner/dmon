@@ -363,10 +363,37 @@ def load_baseline(options):
 
 
 def format_digit(number, options):
+    """
+    Format a number as integer of real.
+    """
     if options["--fixed"] == True:
-        return str(float(number))
+        return str(round(float(number),1))
     else:
         return str(int(round(number)))
+
+
+def format_stat(number, baseline_skill, options):
+    """
+    Format statistic per options, as difference to baseline or as comparison.
+    """
+    if isinstance(number, numbers.Number):
+        diff_mode = options["--diff"]
+        cmp_mode = options["--compare"]
+        if diff_mode:
+            # as the difference between the baseline
+            delta = number - baseline_skill
+            number = format_digit(delta, options)
+            # prefix with the sign
+            if delta > 0:
+                number = "+" + number
+        else:
+            # numbers get formatted according to options
+            number = format_digit(number, options)
+            # include comparisons
+            if cmp_mode:
+                number += "/"
+                number += format_digit(baseline_skill, options)
+    return number
 
 
 def format_row(row_data, column_names, options, baseline_skill):
@@ -377,24 +404,7 @@ def format_row(row_data, column_names, options, baseline_skill):
                [1/2, 4/4, 4/2, ...] (for comparison format)
     """
     row = []
-    diff_mode = options["--diff"]
-    cmp_mode = options["--compare"]
     for col_key in column_names:
-        value = row_data[col_key]
-        if isinstance(value, numbers.Number):
-            if diff_mode:
-                # as the difference between the baseline
-                delta = value - baseline_skill[col_key]
-                value = format_digit(delta, options)
-                # prefix with the sign
-                if delta > 0:
-                    value = "+" + value
-            else:
-                # numbers get formatted according to options
-                value = format_digit(value, options)
-                # include comparisons
-                if cmp_mode:
-                    value += "/"
-                    value += format_digit(baseline_skill[col_key], options)
+        value = format_stat(row_data[col_key], baseline_skill[col_key], options)
         row.append(value)
     return row
