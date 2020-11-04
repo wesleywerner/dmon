@@ -180,9 +180,6 @@ def derive_averages(wad_data, options):
     the number of data points to get an average.
     """
 
-    if options["--average"] == False:
-        return
-
     skill_order = ("easy", "medium", "hard")
     column_names = ("monsters", "hitscanners", "health points",
                     "armor points", "bullets", "shells")
@@ -228,7 +225,7 @@ def derive_averages(wad_data, options):
         avg[skill]["shell ratio"] = round(avg_shells, 1)
 
     wad_data["totals"] = sums
-    wad_data["average"] = avg
+    wad_data["data"]["AVERAGES"] = avg
 
 
 def derive_answers(wad_data, options):

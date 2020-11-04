@@ -141,7 +141,7 @@ def to_tabular(wad_data, options, list_averages):
         
         # Override the map dataset if listing averages.
         if list_averages:
-            map_data = wad_data["average"]
+            map_data = wad_data["data"]["AVERAGES"]
 
         # Print file and map names
         if cmp_mode or diff_mode:
@@ -236,24 +236,22 @@ def to_json(wad_data):
     Output statistics as raw data.
     """
     import json
-    return json.dumps(wad_data)
+    return json.dumps(wad_data, indent=2)
 
 
 def to_baseline_dump(wad_data):
     """
     Output as baseline-structured dump.
     """
-    if not "average" in wad_data:
-        return "error: baseline dump only works with --average option."
-
     skills = ("easy", "medium", "hard")
 
+    average_data = wad_data["data"]["AVERAGES"]
     for skill in skills:
-        for key, value in wad_data["average"][skill].items():
-            wad_data["average"][skill][key] = round(value, 1)
+        for key, value in average_data[skill].items():
+            average_data[skill][key] = round(value, 1)
 
     import json
-    return json.dumps(wad_data["average"], indent=4)
+    return json.dumps(average_data, indent=4)
 
 
 def print_legend_flags(options):
