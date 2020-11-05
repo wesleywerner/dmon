@@ -390,7 +390,13 @@ def format_digit(number, options):
     if options["--fixed"] == True:
         return str(round(float(number),1))
     else:
-        return str(int(round(number)))
+        # If value rounds to zero return a float with leading zero sliced
+        value = round(number, 1)
+        int_value = int(round(number))
+        if int_value == 0 and value != 0.0:
+            return str(value)[1:]
+        else:
+            return str(int_value)
 
 
 def format_stat(number, baseline_skill, options):
