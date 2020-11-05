@@ -74,6 +74,13 @@ def rockets_of(id):
     return lookup.rockets.get(id, 0)
 
 
+def plasma_of(id):
+    """
+    Counts the number of plasma cells of id.
+    """
+    return lookup.plasma.get(id, 0)
+
+
 def new_map_data_object():
     """Return a new blank map data object."""
 
@@ -91,7 +98,8 @@ def new_map_data_object():
         "armor points":0,
         "shells": 0,
         "bullets": 50,
-        "rockets":0
+        "rockets":0,
+        "plasma cells":0
         }
 
     for key, value in required_properties.items():
@@ -171,6 +179,7 @@ def extract_statistics(options):
             bullets_inc = bullets_of(thing.type)
             hit_points = hit_points_of(thing.type)
             rockets_inc = rockets_of(thing.type)
+            plasma_inc = plasma_of(thing.type)
 
             # store traits into skill groups
             for skill_name, skill in all_skills.items():
@@ -186,6 +195,7 @@ def extract_statistics(options):
                     skill["bullets"] += bullets_inc
                     skill["monster hit points"] += hit_points
                     skill["rockets"] += rockets_inc
+                    skill["plasma cells"] += plasma_inc
 
     # sum, calculate & derive answers
     if len(wad_data["map list"]) > 0:
@@ -204,17 +214,19 @@ def derive_averages(wad_data, options):
 
     skill_order = ("easy", "medium", "hard")
     column_names = ("monsters", "hitscanners", "health points",
-                    "armor points", "bullets", "shells", "monster hit points")
+                    "armor points", "bullets", "shells", "rockets",
+                    "plasma cells",
+                    "monster hit points")
 
     # Take each stat from each map and compile them into grouped lists.
-    # eg map_counts["easy"]["shells"] = [10, 20, ...]
-    #    map_counts["medium"]["shells"] = [30, 10, ...]
-    map_counts = new_totals_object(column_names)
+    # eg grouped_values["easy"]["shells"] = [10, 20, ...]
+    #    grouped_values["medium"]["shells"] = [30, 10, ...]
+    grouped_values = new_totals_object(column_names)
     for map_name in wad_data["map list"]:
         map_data = wad_data["data"][map_name]
         for skill in skill_order:
             s_data = map_data[skill]
-            values = map_counts[skill]
+            values = grouped_values[skill]
             for col in column_names:
                 values[col].append(s_data[col])
 
@@ -225,8 +237,8 @@ def derive_averages(wad_data, options):
     avg = new_totals_object(column_names)
     for skill in skill_order:
         for col in column_names:
-            sums[skill][col] = sum(map_counts[skill][col])
-            data_points = float(len(map_counts[skill][col]))
+            sums[skill][col] = sum(grouped_values[skill][col])
+            data_points = float(len(grouped_values[skill][col]))
             if data_points == 0:
                 avg[skill][col] = 0
             else:
@@ -242,12 +254,16 @@ def derive_averages(wad_data, options):
         avg_armor = avg[skill]["armor points"] / avg_mons   #avg_mons_ap
         avg_bullets = (avg[skill]["bullets"] * constants.BULLET_DAMAGE) / avg_mons_hp
         avg_shells = (avg[skill]["shells"] * constants.SHELL_DAMAGE) / avg_mons_hp
+        avg_rockets = (avg[skill]["rockets"] * constants.ROCKET_DAMAGE) / avg_mons_hp
+        avg_plasma = (avg[skill]["plasma cells"] * constants.PLASMA_DAMAGE) / avg_mons_hp
 
         avg[skill]["hit scan %"] = round(avg_hscan * 100, 1)
         avg[skill]["health ratio"] = round(avg_health, 1)
         avg[skill]["armor ratio"] = round(avg_armor, 1)
         avg[skill]["bullet ratio"] = round(avg_bullets, 1)
         avg[skill]["shell ratio"] = round(avg_shells, 1)
+        avg[skill]["rocket ratio"] = round(avg_rockets, 1)
+        avg[skill]["plasma ratio"] = round(avg_plasma, 1)
 
     wad_data["totals"] = sums
     wad_data["data"]["AVERAGES"] = avg
@@ -336,21 +352,25 @@ def derive_ammo_ratio(skill):
     bullet_count = skill["bullets"]
     shell_count = skill["shells"]
     rocket_count = skill["rockets"]
+    plasma_count = skill["plasma cells"]
     monster_hp = float(skill["monster hit points"])
 
     bullet_ratio = 0
     shell_ratio = 0
     rocket_ratio = 0
+    plasma_ratio = 0
 
     if monster_hp > 0:
         bullet_ratio = (bullet_count * constants.BULLET_DAMAGE) / monster_hp
         shell_ratio = (shell_count * constants.SHELL_DAMAGE) / monster_hp
         rocket_ratio = (rocket_count * constants.ROCKET_DAMAGE) / monster_hp
+        plasma_ratio = (plasma_count * constants.PLASMA_DAMAGE) / monster_hp
     # else:
 
     skill["bullet ratio"] = round(bullet_ratio, 1)
     skill["shell ratio"] = round(shell_ratio, 1)
     skill["rocket ratio"] = round(rocket_ratio, 1)
+    skill["plasma ratio"] = round(plasma_ratio, 1)
 
 
 def derive_recommendations(map_data, skill, options):
@@ -362,17 +382,27 @@ def derive_recommendations(map_data, skill, options):
     map_data[skill]["flags"] = rec_codes
     baseline = load_baseline(options)
 
+    # Get map values
     health_ratio = map_data[skill]["health ratio"]
     armor_ratio = map_data[skill]["armor ratio"]
     bullet_ratio = map_data[skill]["bullet ratio"]
     shell_ratio = map_data[skill]["shell ratio"]
     hitscan = map_data[skill]["hit scan %"]
+    rocket_ratio = map_data[skill]["rocket ratio"]
+    plasma_ratio = map_data[skill]["plasma ratio"]
+    
+    # Get baseline values
+    # TODO: .get() all these
     bl_health = baseline[skill]["health ratio"]
     bl_armor = baseline[skill]["armor ratio"]
     bl_bullet = baseline[skill]["bullet ratio"]
     bl_shell = baseline[skill]["shell ratio"]
     bl_hitscan = baseline[skill]["hit scan %"]
+    bl_rocket = baseline[skill].get("rocket ratio", 0)
+    bl_plasma = baseline[skill].get("plasma ratio", 0)
 
+    # Format the values
+    # TODO: investigate removing rounding
     if options["--fixed"] == False:
         health_ratio = int(round(health_ratio))
         armor_ratio = int(round(armor_ratio))
@@ -384,6 +414,8 @@ def derive_recommendations(map_data, skill, options):
         bl_bullet = int(round(bl_bullet))
         bl_shell = int(round(bl_shell))
         bl_hitscan = int(round(bl_hitscan))
+        bl_rocket = int(round(bl_rocket))
+        bl_plasma = int(round(bl_plasma))
 
     if health_ratio < bl_health:
         rec_codes += constants.RECOMMENDS_HP
@@ -397,9 +429,15 @@ def derive_recommendations(map_data, skill, options):
     if shell_ratio < bl_shell:
         rec_codes += constants.RECOMMENDS_SHELLS
 
+    if rocket_ratio < bl_rocket:
+        rec_codes += constants.RECOMMENDS_ROCKETS
+        
+    if plasma_ratio < bl_plasma:
+        rec_codes += constants.RECOMMENDS_PLASMA
+
     if hitscan > bl_hitscan:
         rec_codes += constants.RECOMMENDS_HITSCANS
-
+    
     map_data[skill]["flags"] = rec_codes
 
 

@@ -186,7 +186,7 @@ def to_csv(wad_data, options):
 
     csv = ("FILE,MAP,SKILL,MONSTERS,HITSCANNERS,HIT SCAN %,HEALTH POINTS,HEALTH RATIO,"
            "ARMOR POINTS,ARMOR RATIO,BULLETS,"
-           "BULLET RATIO,SHELLS,SHELL RATIO\n")
+           "BULLET RATIO,SHELLS,SHELL RATIO,ROCKETS,ROCKET RATIO,CELLS,PLASMA RATIO\n")
 
     for map_name in wad_data["map list"]:
         map_data = wad_data["data"][map_name]
@@ -205,7 +205,11 @@ def to_csv(wad_data, options):
             csv += str(skill_data["bullets"]) + ","
             csv += str(skill_data["bullet ratio"]) + ","
             csv += str(skill_data["shells"]) + ","
-            csv += str(skill_data["shell ratio"])
+            csv += str(skill_data["shell ratio"]) + ","
+            csv += str(skill_data["rockets"]) + ","
+            csv += str(skill_data["rocket ratio"]) + ","
+            csv += str(skill_data["plasma cells"]) + ","
+            csv += str(skill_data["plasma ratio"])
             csv += "\n"
 
     return csv

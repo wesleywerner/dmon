@@ -42,6 +42,18 @@ No  SKILL   HIT POINTS      MONSTER                 TOTAL = 11760
     10: backpack
     5: trooper
 
+* plasma (medium & hard): 200
+    40: plasma rifle
+    20: cell
+    100: cell pack
+    40: BFG
+
+* plasma (easy): 800
+    40: plasma rifle
+    20: cell
+    700: 7 cell packs
+    40: BFG
+
 * health: 36
     10: stimpack
     25: medkit
@@ -151,6 +163,20 @@ class TestWADExtractionMethods(unittest.TestCase):
         expected = 8    # Launcher + rocket + box of rockets
         actual = easy_data["rockets"]
         self.assertEqual(actual, expected)
+
+    def test_plasma(self):
+        """Count plasma"""
+        options = dmon.docopt(dmon.__doc__, argv=["test.wad", "MAP01"])
+        wad_stats = dmoncommon.extract_statistics(options)
+        map_data = wad_stats["data"]["MAP01"]
+        easy_data = map_data["easy"]
+        hard_data = map_data["hard"]
+        easy_expected = 800 # rifle + cell + 7 packs + BFG
+        hard_expected = 200 # rifle + cell + pack + BFG
+        easy_actual = easy_data["plasma cells"]
+        hard_actual = hard_data["plasma cells"]
+        self.assertEqual(easy_actual, easy_expected)
+        self.assertEqual(hard_actual, hard_expected)
 
     def test_health_points(self):
         """Count health points"""
@@ -301,6 +327,29 @@ class TestDerivingMethods(unittest.TestCase):
         expected = 12.5
         actual = easy_data["rocket ratio"]
         self.assertEqual(actual, expected)
+
+    def test_plasma_ratio(self):
+        """
+        Derive plasma damage to monster hit points ratio.
+        = (cells * damage) / monster hit points
+        [EASY]
+        = (800 * 25) / 11760
+        = 1.7
+        [HARD]
+        = (200 * 25) / 11760
+        = 0.42
+        """
+        options = dmon.docopt(dmon.__doc__, argv=["test.wad", "MAP01"])
+        wad_stats = dmoncommon.extract_statistics(options)
+        map_data = wad_stats["data"]["MAP01"]
+        easy_data = map_data["easy"]
+        hard_data = map_data["hard"]
+        easy_expected = 1.7
+        hard_expected = 0.4
+        easy_actual = easy_data["plasma ratio"]
+        hard_actual = hard_data["plasma ratio"]
+        self.assertEqual(easy_actual, easy_expected)
+        self.assertEqual(hard_actual, hard_expected)
 
     def test_averages(self):
         """Derive averages"""

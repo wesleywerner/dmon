@@ -6,6 +6,8 @@ RECOMMENDS_AP = "A"
 RECOMMENDS_HITSCANS = "!"
 RECOMMENDS_BULLETS = "b"
 RECOMMENDS_SHELLS = "s"
+RECOMMENDS_ROCKETS = "r"
+RECOMMENDS_PLASMA = "p"
 
 LICENSE = """
 Copyright (c) 2019 Wesley (beast) Werner
@@ -31,6 +33,7 @@ USE OR OTHER DEALINGS IN THE SOFTWARE.
 Credit to Omgifol, A Python library for manipulation of WAD files.
 Copyright (c) 2005 Fredrik Johansson
 https://sourceforge.net/projects/omgifol/"""
+
 
 ABOUT = """WAD analysis tool that estimates the toughness of DOOM maps
 
@@ -75,16 +78,19 @@ Dmon uses Omgifol to read WAD files (see --license).
 Indemnity: The metrics used here are subjective to personal opinion.
 Decide for yourself if this tool is useful (or not)."""
 
+
 """
 Skill titles.
 """
 SKILLS = ("easy", "medium", "hard")
 
+
 """
 Statistic titles.
 """
 TITLES = ("hit scan %", "health ratio", "armor ratio", "bullet ratio",
-    "shell ratio", "rocket ratio", "flags")
+    "shell ratio", "rocket ratio", "plasma ratio", "flags")
+
 
 """
 Bullet damage.
@@ -92,6 +98,7 @@ Taken as the median damage done by the Chaingun per tap of the trigger.
 https://doomwiki.org/wiki/Chaingun#Data
 """
 BULLET_DAMAGE = 20
+
 
 """
 Shell damage.
@@ -104,10 +111,19 @@ https://doomwiki.org/wiki/Shotgun#Data
 """
 SHELL_DAMAGE = 75
 
+
 """
 Rocket damage.
 Taken as the median damage done by the rocket launcher per direct hit (no blast damage).
 https://doomwiki.org/wiki/Rocket_launcher#Data
 """
 ROCKET_DAMAGE = 100
+
+
+"""
+Plasma damage.
+Taken as the median damage done by the plasma gun per shot.
+https://doomwiki.org/wiki/Plasma_gun#Data
+"""
+PLASMA_DAMAGE = 25
 

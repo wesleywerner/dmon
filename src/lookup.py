@@ -98,6 +98,17 @@ rockets = {
 
 
 """
+Count of plasma per thing.
+"""
+plasma = {
+    2006: 40, # BFG
+    17: 100, # cell pack
+    2004: 40, # plasma rifle
+    2047: 20 # energy cell
+}
+
+
+"""
 Monster hit points lookup.
 """
 monster_hp = {
