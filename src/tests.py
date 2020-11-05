@@ -102,6 +102,7 @@ TextTestResult.getDescription = lambda _, test: test.shortDescription()
 
 import unittest
 import baselines
+import constants
 import dmoncommon
 import dmon
 
@@ -410,11 +411,11 @@ class TestBaselineData(unittest.TestCase):
         skill_order = ("easy", "medium", "hard")
         for baseline_name, data in baselines.lookup.items():
             for skill in skill_order:
-                data[skill]["hit scan %"]
-                data[skill]["health ratio"]
-                data[skill]["armor ratio"]
-                data[skill]["bullet ratio"]
-                data[skill]["shell ratio"]
+                for col in constants.TITLES:
+                    if col != "flags":
+                        baseline_value = data[skill].get(col)
+                        self.assertIsNotNone(baseline_value,
+                            "expected baseline to have row for %s" % (col,))
 
 
 if __name__ == '__main__':

@@ -392,12 +392,11 @@ def derive_recommendations(map_data, skill, options):
     plasma_ratio = map_data[skill]["plasma ratio"]
     
     # Get baseline values
-    # TODO: .get() all these
-    bl_health = baseline[skill]["health ratio"]
-    bl_armor = baseline[skill]["armor ratio"]
-    bl_bullet = baseline[skill]["bullet ratio"]
-    bl_shell = baseline[skill]["shell ratio"]
-    bl_hitscan = baseline[skill]["hit scan %"]
+    bl_health = baseline[skill].get("health ratio", 0)
+    bl_armor = baseline[skill].get("armor ratio", 0)
+    bl_bullet = baseline[skill].get("bullet ratio", 0)
+    bl_shell = baseline[skill].get("shell ratio", 0)
+    bl_hitscan = baseline[skill].get("hit scan %", 0)
     bl_rocket = baseline[skill].get("rocket ratio", 0)
     bl_plasma = baseline[skill].get("plasma ratio", 0)
 
