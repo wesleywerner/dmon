@@ -84,9 +84,10 @@ def process_wad(options):
         print_legend_flags(options)
 
 
-def format_as_table(columns, rows, first_column_width=6):
-    """Formats fixed width columns."""
-    # build the format string that pads and aligns our columns
+def format_as_table(columns, rows, first_column_width=6, other_column_width=12):
+    """
+    Formats fixed-width columns.
+    """
     fmts = ""
     for i, c in enumerate(columns):
         if i == 0:
@@ -94,7 +95,7 @@ def format_as_table(columns, rows, first_column_width=6):
             fmts += "{:<"+str(first_column_width)+"}"
         else:
             # others right-aligned
-            fmts += "{:>12}"
+            fmts += "{:>"+str(other_column_width)+"}"
     output = fmts.format(*columns) + "\n"
     for values in rows:
         output += fmts.format(*values) + "\n"
@@ -109,40 +110,29 @@ def to_tabular(wad_data, options, list_averages):
     the map loop is broken early.
     """
 
-    # titles for all statistics
-    row_titles = ["HIT SCAN %", "HEALTH ^", "ARMOR ^",
-                    "BULLETS ^", "SHELLS ^", "FLAGS"]
-    
-    # column titles for horizontal output
-    h_column_titles = ["SKILL", "HSCAN%", "HEALTH^", "ARMOR^",
-                    "BULLET^", "SHELL^", "FLAGS"]
-    
     # column titles for each skill
     column_titles = ["", "EASY", "MEDIUM", "HARD"]
-    
-    # keys of statistics data structure that map to each title
-    column_names = ("hitscanner%", "health ratio", "armor ratio",
-                    "bullet ratio", "shell ratio")
     
     # Format width of first column.
     # This will be smaller for pivoted output.
     first_column_width = 12
+    other_column_width = 8
 
     cmp_mode = options["--compare"]
     diff_mode = options["--diff"]
     pivoted_mode = options["--pivot"]
-    baseline = dmoncommon.load_baseline(options)
-    skill_order = ("easy", "medium", "hard")
-
     output = ""
+    
+    # List of maps to print
+    map_list = wad_data["map list"]
+    
+    # Overwrite the map list when printing averages
+    if list_averages:
+        map_list = ["AVERAGES",]
 
-    for map_name in wad_data["map list"]:
-        map_data = wad_data["data"][map_name]
+    for map_name in map_list:
+        map_data = wad_data["results"][map_name]
         
-        # Override the map dataset if listing averages.
-        if list_averages:
-            map_data = wad_data["data"]["AVERAGES"]
-
         # Print file and map names
         if cmp_mode or diff_mode:
             fmt_values = (wad_data["filename"], map_name, options["--baseline"])
@@ -153,46 +143,34 @@ def to_tabular(wad_data, options, list_averages):
 
         rows = []
         
-        # Pivot the output so that statistics are listed
-        # as columns instead of rows.
         if pivoted_mode:
-            # Switch the column titles for horizontal display
-            column_titles = h_column_titles
+            # List statistics as columns
+            column_titles = ("skill",) + constants.TITLES
+            # Adjust column sizes for pivoted output
             first_column_width = 6
-            # Averages don't have FLAGS, remove the column
-            if list_averages:
-                column_titles.pop()
-            for skill in skill_order:
-                this_row = dmoncommon.format_row (map_data[skill], column_names, options, baseline[skill])
-                # Insert the skill name
-                this_row.insert(0, skill)
-                # Append FLAGS when not listing averages
-                if not list_averages:
-                    this_row.append(map_data[skill]["flags"])
+            other_column_width = 14
+            for skill in constants.SKILLS:
+                # Add the skill title
+                this_row = [skill,]
+                for i, title in enumerate(constants.TITLES):
+                    # Average row has no flags, default to blank
+                    stat_value = map_data[skill].get(title) or ""
+                    this_row.append(stat_value)
                 rows.append(this_row)
         else:
-            # List each statistic as a row
-            for i, column in enumerate(column_names):
+            # List statistic as rows
+            for i, title in enumerate(constants.TITLES):
                 # Add the stat title
-                this_row = [row_titles[i],]
+                this_row = [title,]
                 # Add the values for this stat from each skill level
-                for skill in skill_order:
-                    skill_data = dmoncommon.format_row(map_data[skill], column_names, options, baseline[skill])
-                    this_row.append(skill_data[i])
+                for skill in constants.SKILLS:
+                    # Average row has no flags, default to blank
+                    stat_value = map_data[skill].get(title) or ""
+                    this_row.append(stat_value)
                 rows.append(this_row)
 
-            # Append FLAGS when not listing averages
-            if not list_averages:
-                flags_row = ["FLAGS"]
-                for skill in skill_order:
-                    flags_row.append(map_data[skill]["flags"])
-                rows.append(flags_row)
-                
-        output += format_as_table(column_titles, rows, first_column_width)
-
-        # Stop processing if listing averages, as it only has one set of values.
-        if list_averages:
-            break
+        output += format_as_table(column_titles, rows,
+                    first_column_width, other_column_width)
 
     return output
 
@@ -202,22 +180,20 @@ def to_csv(wad_data, options):
     Output statistics as CSV data.
     """
 
-    skill_order = ("easy", "medium", "hard")
-
-    csv = ("FILE,MAP,SKILL,MONSTERS,HITSCANNERS,HITSCANNER%,HEALTH POINTS,HEALTH RATIO,"
+    csv = ("FILE,MAP,SKILL,MONSTERS,HITSCANNERS,HIT SCAN %,HEALTH POINTS,HEALTH RATIO,"
            "ARMOR POINTS,ARMOR RATIO,BULLETS,"
            "BULLET RATIO,SHELLS,SHELL RATIO\n")
 
     for map_name in wad_data["map list"]:
         map_data = wad_data["data"][map_name]
-        for skill in skill_order:
+        for skill in constants.SKILLS:
             skill_data = map_data[skill]
             csv += wad_data["filename"] + ","
             csv += map_name + ","
             csv += skill + ","
             csv += str(skill_data["monsters"]) + ","
             csv += str(skill_data["hitscanners"]) + ","
-            csv += str(skill_data["hitscanner%"]) + ","
+            csv += str(skill_data["hit scan %"]) + ","
             csv += str(skill_data["health points"]) + ","
             csv += str(skill_data["health ratio"]) + ","
             csv += str(skill_data["armor points"]) + ","
@@ -243,10 +219,8 @@ def to_baseline_dump(wad_data):
     """
     Output as baseline-structured dump.
     """
-    skills = ("easy", "medium", "hard")
-
     average_data = wad_data["data"]["AVERAGES"]
-    for skill in skills:
+    for skill in constants.SKILLS:
         for key, value in average_data[skill].items():
             average_data[skill][key] = round(value, 1)
 

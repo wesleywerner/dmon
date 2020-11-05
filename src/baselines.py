@@ -6,7 +6,7 @@ lookup = {
     "DOOM": {
         "medium": {
             "shells": 171.2,
-            "hitscanner%": 33.5,
+            "hit scan %": 33.5,
             "bullet ratio": 5.5,
             "hitscanners": 22.0,
             "bullets": 358.6,
@@ -19,7 +19,7 @@ lookup = {
         },
         "hard": {
             "shells": 195.0,
-            "hitscanner%": 32.1,
+            "hit scan %": 32.1,
             "bullet ratio": 4.0,
             "hitscanners": 28.9,
             "bullets": 362.2,
@@ -32,7 +32,7 @@ lookup = {
         },
         "easy": {
             "shells": 154.1,
-            "hitscanner%": 34.5,
+            "hit scan %": 34.5,
             "bullet ratio": 9.1,
             "hitscanners": 13.2,
             "bullets": 348.8,
@@ -47,7 +47,7 @@ lookup = {
     "DOOM2": {
         "medium": {
             "shells": 178.5,
-            "hitscanner%": 34.9,
+            "hit scan %": 34.9,
             "bullet ratio": 4.3,
             "hitscanners": 28.9,
             "bullets": 353.9,
@@ -60,7 +60,7 @@ lookup = {
         },
         "hard": {
             "shells": 190.9,
-            "hitscanner%": 32.3,
+            "hit scan %": 32.3,
             "bullet ratio": 3.1,
             "hitscanners": 37.8,
             "bullets": 358.0,
@@ -73,7 +73,7 @@ lookup = {
         },
         "easy": {
             "shells": 151.9,
-            "hitscanner%": 38.5,
+            "hit scan %": 38.5,
             "bullet ratio": 8.0,
             "hitscanners": 16.4,
             "bullets": 339.1,
@@ -88,7 +88,7 @@ lookup = {
     "SIGIL": {
         "medium": {
             "shells": 221.8,
-            "hitscanner%": 32.6,
+            "hit scan %": 32.6,
             "bullet ratio": 5.1,
             "hitscanners": 22.2,
             "bullets": 349.4,
@@ -101,7 +101,7 @@ lookup = {
         },
         "hard": {
             "shells": 233.3,
-            "hitscanner%": 32.0,
+            "hit scan %": 32.0,
             "bullet ratio": 3.9,
             "hitscanners": 27.1,
             "bullets": 334.4,
@@ -114,7 +114,7 @@ lookup = {
         },
         "easy": {
             "shells": 183.1,
-            "hitscanner%": 31.2,
+            "hit scan %": 31.2,
             "bullet ratio": 9.3,
             "hitscanners": 12.2,
             "bullets": 363.3,
@@ -129,7 +129,7 @@ lookup = {
     "AV": {
         "medium": {
             "shells": 540.0,
-            "hitscanner%": 24.7,
+            "hit scan %": 24.7,
             "bullet ratio": 1.7,
             "hitscanners": 62.1,
             "bullets": 435.0,
@@ -142,7 +142,7 @@ lookup = {
         },
         "hard": {
             "shells": 608.4,
-            "hitscanner%": 23.7,
+            "hit scan %": 23.7,
             "bullet ratio": 1.3,
             "hitscanners": 80.9,
             "bullets": 455.8,
@@ -155,7 +155,7 @@ lookup = {
         },
         "easy": {
             "shells": 424.5,
-            "hitscanner%": 26.4,
+            "hit scan %": 26.4,
             "bullet ratio": 2.3,
             "hitscanners": 45.2,
             "bullets": 392.0,
@@ -170,7 +170,7 @@ lookup = {
     "DTWID": {
         "medium": {
             "shells": 287.9,
-            "hitscanner%": 31.4,
+            "hit scan %": 31.4,
             "bullet ratio": 8.5,
             "hitscanners": 28.5,
             "bullets": 769.8,
@@ -183,7 +183,7 @@ lookup = {
         },
         "hard": {
             "shells": 307.4,
-            "hitscanner%": 32.3,
+            "hit scan %": 32.3,
             "bullet ratio": 7.1,
             "hitscanners": 35.1,
             "bullets": 775.2,
@@ -196,7 +196,7 @@ lookup = {
         },
         "easy": {
             "shells": 266.5,
-            "hitscanner%": 32.6,
+            "hit scan %": 32.6,
             "bullet ratio": 11.5,
             "hitscanners": 21.4,
             "bullets": 754.8,
@@ -211,7 +211,7 @@ lookup = {
     "HR": {
         "medium": {
             "shells": 640.1,
-            "hitscanner%": 14.3,
+            "hit scan %": 14.3,
             "bullet ratio": 2.4,
             "hitscanners": 26.1,
             "bullets": 432.0,
@@ -224,7 +224,7 @@ lookup = {
         },
         "hard": {
             "shells": 638.0,
-            "hitscanner%": 13.0,
+            "hit scan %": 13.0,
             "bullet ratio": 1.9,
             "hitscanners": 29.1,
             "bullets": 425.0,
@@ -237,7 +237,7 @@ lookup = {
         },
         "easy": {
             "shells": 617.5,
-            "hitscanner%": 16.3,
+            "hit scan %": 16.3,
             "bullet ratio": 3.8,
             "hitscanners": 18.3,
             "bullets": 424.4,

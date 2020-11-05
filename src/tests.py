@@ -184,7 +184,7 @@ class TestDerivingMethods(unittest.TestCase):
         map_data = wad_stats["data"]["MAP01"]
         easy_data = map_data["easy"]
         expected = 28   # round(5 / 18.0 * 100)
-        actual = easy_data["hitscanner%"]
+        actual = easy_data["hit scan %"]
         self.assertEqual(actual, expected)
 
     def test_armor_ratio(self):
@@ -253,13 +253,13 @@ class TestDerivingMethods(unittest.TestCase):
         args = ["test.wad", "--average", "MAP0[12]"]
         options = dmon.docopt(dmon.__doc__, argv=args)
         wad_stats = dmoncommon.extract_statistics(options)
-        avg = wad_stats["average"]
+        avg = wad_stats["data"]["AVERAGES"]
         expected_hitscan = 35.0
         expected_health = 1.8
         expected_armor = 15.1
         expected_bullet = 10.2
         expected_shell = 4.0
-        self.assertEqual(avg["easy"]["hitscanner%"], expected_hitscan)
+        self.assertEqual(avg["easy"]["hit scan %"], expected_hitscan)
         self.assertEqual(avg["easy"]["health ratio"], expected_health)
         self.assertEqual(avg["easy"]["armor ratio"], expected_armor)
         self.assertEqual(avg["easy"]["bullet ratio"], expected_bullet)
@@ -291,7 +291,7 @@ class TestBaselineData(unittest.TestCase):
         skill_order = ("easy", "medium", "hard")
         for baseline_name, data in baselines.lookup.items():
             for skill in skill_order:
-                data[skill]["hitscanner%"]
+                data[skill]["hit scan %"]
                 data[skill]["health ratio"]
                 data[skill]["armor ratio"]
                 data[skill]["bullet ratio"]

@@ -171,6 +171,7 @@ def extract_statistics(options):
     # sum, calculate & derive answers
     derive_answers(wad_data, options)
     derive_averages(wad_data, options)
+    format_results(wad_data, options)
     return wad_data
 
 
@@ -218,7 +219,7 @@ def derive_averages(wad_data, options):
         avg_bullets = avg[skill]["bullets"] / avg_mons
         avg_shells = avg[skill]["shells"] / avg_mons
 
-        avg[skill]["hitscanner%"] = round(avg_hscan * 100, 1)
+        avg[skill]["hit scan %"] = round(avg_hscan * 100, 1)
         avg[skill]["health ratio"] = round(avg_health, 1)
         avg[skill]["armor ratio"] = round(avg_armor, 1)
         avg[skill]["bullet ratio"] = round(avg_bullets, 1)
@@ -242,6 +243,29 @@ def derive_answers(wad_data, options):
             derive_recommendations(map_data, skill, options)
 
 
+def format_results(wad_data, options):
+    """
+    Build the results structure with numbers formatted as per options.
+    """
+    # Load baseline data
+    baseline = load_baseline(options)
+    # Create the results table
+    wad_results = wad_data["results"] = {}
+    # Add formatted results for all map statistics
+    for map_name in wad_data["map list"] + ["AVERAGES",]:
+        map_data = wad_data["data"][map_name]
+        map_results = wad_results[map_name] = {}
+        for skill in ["easy", "medium", "hard"]:
+            skill_results = map_results[skill] = {}
+            skill_data = map_data[skill]
+            for i, key in enumerate(constants.TITLES):
+                if key == "flags":
+                    if skill_data.get(key):
+                        skill_results[key] = skill_data[key]
+                else:
+                    skill_results[key] = format_stat(skill_data[key], baseline[skill][key], options)
+            
+
 def derive_monster_count(skill):
     """
     Count total number of monsters.
@@ -259,7 +283,7 @@ def derive_hitscanner_ratio(skill):
         hitscan_ratio = hitscan_count / monster_count * 100
     else:
         hitscan_ratio = 0
-    skill["hitscanner%"] = int(round(hitscan_ratio))
+    skill["hit scan %"] = int(round(hitscan_ratio))
 
 
 def derive_armor_and_health_ratio(skill):
@@ -313,12 +337,12 @@ def derive_recommendations(map_data, skill, options):
     armor_ratio = map_data[skill]["armor ratio"]
     bullet_ratio = map_data[skill]["bullet ratio"]
     shell_ratio = map_data[skill]["shell ratio"]
-    hitscan = map_data[skill]["hitscanner%"]
+    hitscan = map_data[skill]["hit scan %"]
     bl_health = baseline[skill]["health ratio"]
     bl_armor = baseline[skill]["armor ratio"]
     bl_bullet = baseline[skill]["bullet ratio"]
     bl_shell = baseline[skill]["shell ratio"]
-    bl_hitscan = baseline[skill]["hitscanner%"]
+    bl_hitscan = baseline[skill]["hit scan %"]
 
     if options["--fixed"] == False:
         health_ratio = int(round(health_ratio))
@@ -391,17 +415,3 @@ def format_stat(number, baseline_skill, options):
                 number += "/"
                 number += format_digit(baseline_skill, options)
     return number
-
-
-def format_row(row_data, column_names, options, baseline_skill):
-    """
-    Formats multiple data columns into a row object.
-    eg returns [1.2, 3.5, 4.2, ...] (for fixed-point format)
-               [1, 4, 4, ...] (for defafult format)
-               [1/2, 4/4, 4/2, ...] (for comparison format)
-    """
-    row = []
-    for col_key in column_names:
-        value = format_stat(row_data[col_key], baseline_skill[col_key], options)
-        row.append(value)
-    return row

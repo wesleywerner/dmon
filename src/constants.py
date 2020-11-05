@@ -67,3 +67,14 @@ Dmon uses Omgifol to read WAD files (see --license)
 
 Indemnity: The metrics used here are subjective to personal opinion.
 Decide for yourself if this tool is useful (or not)."""
+
+"""
+Skill titles.
+"""
+SKILLS = ("easy", "medium", "hard")
+
+"""
+Statistic titles.
+"""
+TITLES = ("hit scan %", "health ratio", "armor ratio", "bullet ratio",
+    "shell ratio", "flags")
