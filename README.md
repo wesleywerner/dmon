@@ -45,81 +45,91 @@ Please report any issues in the [issue tracker](https://github.com/wesleywerner/
 
 # USAGE
 
-    $ dmon -h
-    Dmon
+```
+$ dmon -h
+Dmon
 
-    Usage:
-      dmon <wad> [options]
-      dmon <wad> <pattern> [options]
-      dmon (-h | --help | --about | --license)
+Usage:
+  dmon <wad> [options]
+  dmon <wad> <pattern> [options]
+  dmon (-h | --help | --about | --license)
 
-    Options:
-      -h --help                 Show this screen.
-      --version                 Show current version.
-      --license                 Print the license.
-      --about                   Show how this all works.
-      <pattern>                 match map name (E1M2 or MAP02)
-                                '?' and '*' are wildcards eg:
-                                    E1M* (all episode 1)
-                                    MAP0[135] (MAP01, MAP03 and MAP05)
-      -a, --average             Combine results from multiple maps into
-                                average amounts.
-      -u, --bonus               Include berserk, soulsphere and megesphere
-                                as data points.
-      -f <fmt>, --format=<fmt>  Set output format to: csv, json, dump
-      -b, --baseline=<bl>       Set comparison baseline [Default: DOOM2]
-                                where <bl> can be:
-                                    DOOM, DOOM2, SIGIL,
-                                    AV (Alien Vendetta),
-                                    HR (HELL REVEALED),
-                                    DTWID (Doom the Way id Did)
-      -c, --compare             Show actual/baseline values for comparison.
-      -d, --diff                Display the difference between actual and
-                                baseline values.
-      -x, --fixed               Display fixed-point numbers (otherwise
-                                numbers are rounded up).
-      -l, --legend              Print the recommendation legend at the end.
-
+Options:
+  -h --help                 Show this screen.
+  --version                 Show current version.
+  --license                 Print the license.
+  --about                   Show how this all works.
+  <pattern>                 match map name (E1M2 or MAP02)
+                            '?' and '*' are wildcards eg:
+                                E1M* (all episode 1)
+                                MAP0[135] (MAP01, MAP03 and MAP05)
+  -a, --average             Combine results from multiple maps into
+                            average amounts.
+  -u, --bonus               Include berserk, soulsphere and megesphere
+                            as data points.
+  -f <fmt>, --format=<fmt>  Set output format to: csv, json, dump
+  -b, --baseline=<bl>       Set comparison baseline [Default: DOOM2]
+                            where <bl> can be:
+                                DOOM, DOOM2, SIGIL,
+                                AV (Alien Vendetta),
+                                HR (HELL REVEALED),
+                                DTWID (Doom the Way id Did)
+  -c, --compare             Show actual/baseline values for comparison.
+  -d, --diff                Display the difference between actual and
+                            baseline values.
+  -x, --fixed               Display fixed-point numbers (otherwise
+                            numbers are rounded up).
+  -l, --legend              Print the recommendation legend at the end.
+```
 
 # ABOUT
 
-    $ dmon --about
+```
+$ dmon --about
 
-    WAD analysis tool and toughness estimation of DOOM maps.
+WAD analysis tool that estimates the toughness of DOOM maps
 
-    It queries one or more maps in a WAD/PWAD and prints out the number of
-    hitscanners, health, armor, and ammo items.
+It queries one or more maps in a WAD/PWAD and prints out some crunched
+numbers to try and answer those hard questions.
 
-    It goes further to help map creators answer these questions:
-     * how many health and armor points compared to the number of monsters?
-     * how many ammo rounds are there for each monster?
-     * how many monsters are hitscanners?
+It tries to help map creators answer these questions:
+ * How many monsters are hitscanners?
+ * How many health and armor pickups are there?
+ * How much damage can the player inflict on all monsters given the 
+   amount of ammo in a map?
 
-    To accomplish this the following data points are gathered:
-     1) count of monsters that are hitscanners
-     2) sum of health points for health bonus(1), stimpacks(10), medkits(25)
-     3) sum of armor points for armor bonus(1), green armor(100), blue armor(200)
-     4) count of ammo rounds (including rounds that enemies will drop)
+To accomplish this the following data points are gathered:
+ 1) count of monsters that are meaty versus hitscanners
+ 2) sum of health points for health bonus(1), stimpacks(10), medkits(25)
+ 3) sum of armor points for armor bonus(1), green armor(100), blue armor(200)
+ 4) count of ammo rounds (including those that enemies will drop)
 
-    These metrics are then derived from the gathered data:
-     * Health ratio: number of health points per monster
-     * Armor ratio: number of armor points per monster
-     * Bullet ratio: bullets per monster
-     * Shell ratio: shells per monster
+These numbers are then derived from the gathered data:
+ * Health ratio: number of health points per monster
+ * Armor ratio: number of armor points per monster
+ * Bullet ratio: Damage all bullets can inflict vs total monster hit points.
+ * Shell ratio: Damage all shells can inflict vs total monster hit points.
 
-    To assist the mapper in making sense of these values, we built a baseline
-    of recommended values to compare against. The baseline was sampled from DOOM2.
+Note: bullet and shell damage is taken as the minimum damage possible per round.
+For shells the damage is measured per pellet. This is a known common metric for
+both the shotgun and super shotgun.
 
-    The tool compares the map metrics against the baseline, and if a metric
-    falls outside the baseline a recommendation is made.
+A bullet ratio of 1 means there are enough bullets to kill every monster at
+least once, assuming the round does the least amount of damage possible.
 
-    Note: Berserk(100), Soulsphere(100) and Megasphere(200) items are
-    NOT counted by default. To count these use the "--bonus" option.
+To assist the mapper in making sense of these values, a baseline
+of recommended values can be used for comparison.
+The default baseline is DOOM2, and can be changed with the -b option.
+If a metric falls outside the baseline a recommendation is made.
 
-    Dmon uses Omgifol to read WAD files (see --license)
+Note: Berserk(100), Soulsphere(100) and Megasphere(200) items are
+NOT counted by default. To count these use the "--bonus" option.
 
-    Indemnity: The metrics used here are subjective to personal opinion.
-    Decide for yourself if this tool is useful (or not).
+Dmon uses Omgifol to read WAD files (see --license).
+
+Indemnity: The metrics used here are subjective to personal opinion.
+Decide for yourself if this tool is useful (or not).
+```
 
 # GUIDE
 

@@ -4,8 +4,27 @@ TEST.WAD object breakdown:
 [MAP01]
 
 * 5 hitscanners (including spider mastermind, ss trooper)
-
 * 13 meaty monsters (including cyberdemon)
+
+No  SKILL   HIT POINTS      MONSTER                 TOTAL = 11760
+1   emh     3000            spider mastermind
+1   emh     30              shotgun guy
+1   emh     4000            cyberdemon
+1   emh     150             spectre
+1   emh     700             archvile
+1   emh     70              commando/chaingunner
+1   emh     30              revenant
+1   emh     600             mancubus
+1   emh     500             arachnotron
+1   emh     500             hell knight
+1   emh     400             pain elemental
+1   emh     50              ss guy
+1   emh     60              imp
+1   emh     150             demon
+1   emh     1000            baron of hell
+1   emh     20              zombieman
+1   emh     400             cacodemon
+1   emh     100             lost soul
 
 * shells: 48
     8: shotgun
@@ -15,11 +34,11 @@ TEST.WAD object breakdown:
     4: backpack
     4: shotgun guy
 
-* bullets: 145
+* bullets: 5145
     50: player start
     20: chaingun
     10: clip
-    50: Box of bullets
+    5050: 101 Boxes of bullets
     10: backpack
     5: trooper
 
@@ -52,6 +71,11 @@ TEST.WAD object breakdown:
 * easy: 2 hitscanners
 * medium: 3 hitscanners
 * hard: 5 hitscanners
+
+No  SKILL   HIT POINTS      MONSTER     TOTAL
+2   e       20              zombieman   40
+3   m       20              zombieman   60
+5   h       20              zombieman   100
 
 * easy: 32 shells (4 shotguns * 8)
 * medium: 24 shells (3 shotguns * 8)
@@ -112,7 +136,7 @@ class TestWADExtractionMethods(unittest.TestCase):
         wad_stats = dmoncommon.extract_statistics(options)
         map_data = wad_stats["data"]["MAP01"]
         easy_data = map_data["easy"]
-        expected = 145
+        expected = 5145
         actual = easy_data["bullets"]
         self.assertEqual(actual, expected)
 
@@ -173,6 +197,20 @@ class TestWADExtractionMethods(unittest.TestCase):
         self.assertEqual(actual_easy, expected_easy)
         self.assertEqual(actual_medium, expected_medium)
         self.assertEqual(actual_hard, expected_hard)
+        
+    def test_monster_hit_points(self):
+        """Count monster hit points"""
+        options = dmon.docopt(dmon.__doc__, argv=["test.wad"])
+        wad_stats = dmoncommon.extract_statistics(options)
+        map1_data = wad_stats["data"]["MAP01"]
+        map2_data = wad_stats["data"]["MAP02"]
+        map3_data = wad_stats["data"]["MAP03"]
+        self.assertEqual(map1_data["easy"]["monster hit points"], 11760)
+        self.assertEqual(map1_data["medium"]["monster hit points"], 11760)
+        self.assertEqual(map1_data["hard"]["monster hit points"], 11760)
+        self.assertEqual(map2_data["easy"]["monster hit points"], 40)
+        self.assertEqual(map2_data["medium"]["monster hit points"], 60)
+        self.assertEqual(map2_data["hard"]["monster hit points"], 100)
 
 
 class TestDerivingMethods(unittest.TestCase):
@@ -208,22 +246,32 @@ class TestDerivingMethods(unittest.TestCase):
         self.assertEqual(actual, expected)
 
     def test_bullet_ratio(self):
-        """Derive bullet to monster ratio"""
+        """
+        Derive bullet damage to monster hit points ratio.
+        = (bullets * damage) / monster hit points
+        = (5145 * 5) / 11760
+        = 2.1875
+        """
         options = dmon.docopt(dmon.__doc__, argv=["test.wad", "MAP01"])
         wad_stats = dmoncommon.extract_statistics(options)
         map_data = wad_stats["data"]["MAP01"]
         easy_data = map_data["easy"]
-        expected = 8.1   # bullets / monsters (145 / 18)
+        expected = 2.2
         actual = easy_data["bullet ratio"]
         self.assertEqual(actual, expected)
 
     def test_shell_ratio(self):
-        """Derive shell to monster ratio"""
-        options = dmon.docopt(dmon.__doc__, argv=["test.wad", "MAP01"])
+        """
+        Derive shell damage to monster hit points ratio.
+        = (shells * damage) / monster hit points
+        = (32 * 5) / 40
+        = 4
+        """
+        options = dmon.docopt(dmon.__doc__, argv=["test.wad", "MAP02"])
         wad_stats = dmoncommon.extract_statistics(options)
-        map_data = wad_stats["data"]["MAP01"]
+        map_data = wad_stats["data"]["MAP02"]
         easy_data = map_data["easy"]
-        expected = 2.7   # shells / monsters (48 / 18)
+        expected = 4.0
         actual = easy_data["shell ratio"]
         self.assertEqual(actual, expected)
 
@@ -257,18 +305,13 @@ class TestDerivingMethods(unittest.TestCase):
         expected_hitscan = 35.0
         expected_health = 1.8
         expected_armor = 15.1
-        expected_bullet = 10.2
-        expected_shell = 4.0
+        expected_bullet = 2.2
+        expected_shell = 0
         self.assertEqual(avg["easy"]["hit scan %"], expected_hitscan)
         self.assertEqual(avg["easy"]["health ratio"], expected_health)
         self.assertEqual(avg["easy"]["armor ratio"], expected_armor)
         self.assertEqual(avg["easy"]["bullet ratio"], expected_bullet)
         self.assertEqual(avg["easy"]["shell ratio"], expected_shell)
-
-    @unittest.skip("not implemented")
-    def test_recommendations(self):
-        """Derive recommendation codes"""
-        pass
 
 
 class TestBaselineData(unittest.TestCase):
