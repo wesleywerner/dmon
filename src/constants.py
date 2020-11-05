@@ -87,16 +87,27 @@ TITLES = ("hit scan %", "health ratio", "armor ratio", "bullet ratio",
     "shell ratio", "rocket ratio", "flags")
 
 """
-Minimum bullet damage.
+Bullet damage.
+Taken as the median damage done by the Chaingun per tap of the trigger.
+https://doomwiki.org/wiki/Chaingun#Data
 """
-BULLET_DAMAGE = 5
+BULLET_DAMAGE = 20
 
 """
-Minimum shell pellet damage.
+Shell damage.
+Taken as the median damage done by the shotgun per attack.
+This choice over the super shotgun is due to the commonality of the weapon
+across DOOM versions I and II. The difference in damage may be significant,
+but what is important is that the same metric is used consistently against
+baselines, providing a constant comparison.
+https://doomwiki.org/wiki/Shotgun#Data
 """
-SGPELLET_DAMAGE = 5
+SHELL_DAMAGE = 75
 
 """
 Rocket damage.
+Taken as the median damage done by the rocket launcher per direct hit (no blast damage).
+https://doomwiki.org/wiki/Rocket_launcher#Data
 """
-ROCKET_DAMAGE = 50
+ROCKET_DAMAGE = 100
+

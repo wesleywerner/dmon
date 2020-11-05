@@ -241,7 +241,7 @@ def derive_averages(wad_data, options):
         avg_health = avg[skill]["health points"] / avg_mons #avg_mons_ap
         avg_armor = avg[skill]["armor points"] / avg_mons   #avg_mons_ap
         avg_bullets = (avg[skill]["bullets"] * constants.BULLET_DAMAGE) / avg_mons_hp
-        avg_shells = (avg[skill]["shells"] * constants.SGPELLET_DAMAGE) / avg_mons_hp
+        avg_shells = (avg[skill]["shells"] * constants.SHELL_DAMAGE) / avg_mons_hp
 
         avg[skill]["hit scan %"] = round(avg_hscan * 100, 1)
         avg[skill]["health ratio"] = round(avg_health, 1)
@@ -344,7 +344,7 @@ def derive_ammo_ratio(skill):
 
     if monster_hp > 0:
         bullet_ratio = (bullet_count * constants.BULLET_DAMAGE) / monster_hp
-        shell_ratio = (shell_count * constants.SGPELLET_DAMAGE) / monster_hp
+        shell_ratio = (shell_count * constants.SHELL_DAMAGE) / monster_hp
         rocket_ratio = (rocket_count * constants.ROCKET_DAMAGE) / monster_hp
     # else:
 

@@ -261,14 +261,14 @@ class TestDerivingMethods(unittest.TestCase):
         """
         Derive bullet damage to monster hit points ratio.
         = (bullets * damage) / monster hit points
-        = (5145 * 5) / 11760
-        = 2.1875
+        = (5145 * 20) / 11760
+        = 8.75
         """
         options = dmon.docopt(dmon.__doc__, argv=["test.wad", "MAP01"])
         wad_stats = dmoncommon.extract_statistics(options)
         map_data = wad_stats["data"]["MAP01"]
         easy_data = map_data["easy"]
-        expected = 2.2
+        expected = 8.8
         actual = easy_data["bullet ratio"]
         self.assertEqual(actual, expected)
 
@@ -276,14 +276,14 @@ class TestDerivingMethods(unittest.TestCase):
         """
         Derive shell damage to monster hit points ratio.
         = (shells * damage) / monster hit points
-        = (32 * 5) / 40
-        = 4
+        = (32 * 75) / 40
+        = 60.0
         """
         options = dmon.docopt(dmon.__doc__, argv=["test.wad", "MAP02"])
         wad_stats = dmoncommon.extract_statistics(options)
         map_data = wad_stats["data"]["MAP02"]
         easy_data = map_data["easy"]
-        expected = 4.0
+        expected = 60
         actual = easy_data["shell ratio"]
         self.assertEqual(actual, expected)
 
@@ -291,14 +291,14 @@ class TestDerivingMethods(unittest.TestCase):
         """
         Derive rocket damage to monster hit points ratio.
         = (rockets * damage) / monster hit points
-        = (5 * 50) / 40
-        = 6.25
+        = (5 * 100) / 40
+        = 12.5
         """
         options = dmon.docopt(dmon.__doc__, argv=["test.wad", "MAP02"])
         wad_stats = dmoncommon.extract_statistics(options)
         map_data = wad_stats["data"]["MAP02"]
         easy_data = map_data["easy"]
-        expected = 6.2
+        expected = 12.5
         actual = easy_data["rocket ratio"]
         self.assertEqual(actual, expected)
 
@@ -332,8 +332,8 @@ class TestDerivingMethods(unittest.TestCase):
         expected_hitscan = 35.0
         expected_health = 1.8
         expected_armor = 15.1
-        expected_bullet = 2.2
-        expected_shell = 0
+        expected_bullet = 8.8
+        expected_shell = 0.5
         self.assertEqual(avg["easy"]["hit scan %"], expected_hitscan)
         self.assertEqual(avg["easy"]["health ratio"], expected_health)
         self.assertEqual(avg["easy"]["armor ratio"], expected_armor)
