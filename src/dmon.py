@@ -65,7 +65,11 @@ def process_wad(options):
     wad_data = dmoncommon.extract_statistics(options)
 
     fmt = options["--format"]
-    if fmt is None:
+    if len(wad_data["map list"]) == 0:
+        map_pattern = options["<pattern>"] or "*"
+        print("No maps in WAD, or none matched pattern '%s'."
+        " An Imp tears your arm off." % (map_pattern))
+    elif fmt is None:
         if options["--average"] == True:
             print(to_tabular(wad_data, options, True))
         else:
@@ -78,7 +82,7 @@ def process_wad(options):
         print(to_baseline_dump(wad_data))
     else:
         print("Invalid output format '%s'."
-        " A demon bites your face off." % (fmt))
+        " A Demon bites your face off." % (fmt))
 
     if options["--legend"] == True:
         print_legend_flags(options)
