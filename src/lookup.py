@@ -86,6 +86,17 @@ bullets = {
     8: 10 # backpack
 }
 
+
+"""
+Count of rockets per thing.
+"""
+rockets = {
+    2003: 2, # rocket launcher
+    2010: 1, # single rocket
+    2046: 5 # box of rockets
+}
+
+
 """
 Monster hit points lookup.
 """

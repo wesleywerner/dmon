@@ -67,6 +67,13 @@ def bullets_of(id):
     return lookup.bullets.get(id, 0)
 
 
+def rockets_of(id):
+    """
+    Counts the number of rockets of id.
+    """
+    return lookup.rockets.get(id, 0)
+
+
 def new_map_data_object():
     """Return a new blank map data object."""
 
@@ -84,6 +91,7 @@ def new_map_data_object():
         "armor points":0,
         "shells": 0,
         "bullets": 50,
+        "rockets":0
         }
 
     for key, value in required_properties.items():
@@ -155,13 +163,14 @@ def extract_statistics(options):
         for thing in edit.things:
 
             # grab the traits of this thing
-            hitscan_counter = count_if (is_hitscanner, thing.type)
-            meaty_counter = count_if (is_meaty, thing.type)
-            health_points = health_points_of (thing.type, options["--bonus"])
-            armor_points = armor_points_of (thing.type, options["--bonus"])
-            shells_inc = shells_of (thing.type)
-            bullets_inc = bullets_of (thing.type)
+            hitscan_counter = count_if(is_hitscanner, thing.type)
+            meaty_counter = count_if(is_meaty, thing.type)
+            health_points = health_points_of(thing.type, options["--bonus"])
+            armor_points = armor_points_of(thing.type, options["--bonus"])
+            shells_inc = shells_of(thing.type)
+            bullets_inc = bullets_of(thing.type)
             hit_points = hit_points_of(thing.type)
+            rockets_inc = rockets_of(thing.type)
 
             # store traits into skill groups
             for skill_name, skill in all_skills.items():
@@ -176,6 +185,7 @@ def extract_statistics(options):
                     skill["shells"] += shells_inc
                     skill["bullets"] += bullets_inc
                     skill["monster hit points"] += hit_points
+                    skill["rockets"] += rockets_inc
 
     # sum, calculate & derive answers
     if len(wad_data["map list"]) > 0:
@@ -277,7 +287,7 @@ def format_results(wad_data, options):
                     if skill_data.get(key):
                         skill_results[key] = skill_data[key]
                 else:
-                    skill_results[key] = format_stat(skill_data[key], baseline[skill][key], options)
+                    skill_results[key] = format_stat(skill_data.get(key,0), baseline[skill].get(key,0), options)
             
 
 def derive_monster_count(skill):
@@ -325,17 +335,22 @@ def derive_ammo_ratio(skill):
     """
     bullet_count = skill["bullets"]
     shell_count = skill["shells"]
+    rocket_count = skill["rockets"]
     monster_hp = float(skill["monster hit points"])
+
+    bullet_ratio = 0
+    shell_ratio = 0
+    rocket_ratio = 0
 
     if monster_hp > 0:
         bullet_ratio = (bullet_count * constants.BULLET_DAMAGE) / monster_hp
         shell_ratio = (shell_count * constants.SGPELLET_DAMAGE) / monster_hp
-    else:
-        bullet_ratio = 0
-        shell_ratio = 0
+        rocket_ratio = (rocket_count * constants.ROCKET_DAMAGE) / monster_hp
+    # else:
 
     skill["bullet ratio"] = round(bullet_ratio, 1)
     skill["shell ratio"] = round(shell_ratio, 1)
+    skill["rocket ratio"] = round(rocket_ratio, 1)
 
 
 def derive_recommendations(map_data, skill, options):

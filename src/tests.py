@@ -80,6 +80,8 @@ No  SKILL   HIT POINTS      MONSTER     TOTAL
 * easy: 32 shells (4 shotguns * 8)
 * medium: 24 shells (3 shotguns * 8)
 * hard: 16 shells (2 shotguns * 8)
+
+* 5 rockets, all skills
 """
 
 # Remove redundant verbose test lines
@@ -138,6 +140,16 @@ class TestWADExtractionMethods(unittest.TestCase):
         easy_data = map_data["easy"]
         expected = 5145
         actual = easy_data["bullets"]
+        self.assertEqual(actual, expected)
+
+    def test_rockets(self):
+        """Count rockets"""
+        options = dmon.docopt(dmon.__doc__, argv=["test.wad", "MAP01"])
+        wad_stats = dmoncommon.extract_statistics(options)
+        map_data = wad_stats["data"]["MAP01"]
+        easy_data = map_data["easy"]
+        expected = 8    # Launcher + rocket + box of rockets
+        actual = easy_data["rockets"]
         self.assertEqual(actual, expected)
 
     def test_health_points(self):
@@ -273,6 +285,21 @@ class TestDerivingMethods(unittest.TestCase):
         easy_data = map_data["easy"]
         expected = 4.0
         actual = easy_data["shell ratio"]
+        self.assertEqual(actual, expected)
+
+    def test_rocket_ratio(self):
+        """
+        Derive rocket damage to monster hit points ratio.
+        = (rockets * damage) / monster hit points
+        = (5 * 50) / 40
+        = 6.25
+        """
+        options = dmon.docopt(dmon.__doc__, argv=["test.wad", "MAP02"])
+        wad_stats = dmoncommon.extract_statistics(options)
+        map_data = wad_stats["data"]["MAP02"]
+        easy_data = map_data["easy"]
+        expected = 6.2
+        actual = easy_data["rocket ratio"]
         self.assertEqual(actual, expected)
 
     def test_averages(self):

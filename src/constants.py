@@ -84,7 +84,7 @@ SKILLS = ("easy", "medium", "hard")
 Statistic titles.
 """
 TITLES = ("hit scan %", "health ratio", "armor ratio", "bullet ratio",
-    "shell ratio", "flags")
+    "shell ratio", "rocket ratio", "flags")
 
 """
 Minimum bullet damage.
@@ -95,3 +95,8 @@ BULLET_DAMAGE = 5
 Minimum shell pellet damage.
 """
 SGPELLET_DAMAGE = 5
+
+"""
+Rocket damage.
+"""
+ROCKET_DAMAGE = 50
