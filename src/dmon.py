@@ -189,21 +189,23 @@ def to_csv(wad_data, options):
         "SKILL,"
         "MONSTERS,"
         "HITSCANNERS,"
-        +constants.HITSCAN_COL.upper()+","
         "HEALTH POINTS,"
-        +constants.HEALTH_RATIO_COL.upper()+","
         "ARMOR POINTS,"
-        +constants.ARMOR_RATIO_COL.upper()+","
         "BULLETS,"
-        +constants.BULLET_DMG_COL.upper()+","
         "SHELLS,"
-        +constants.SHELL_DMG_COL.upper()+","
         "ROCKETS,"
-        +constants.ROCKET_DMG_COL.upper()+","
         "CELLS,"
-        +constants.PLASMA_DMG_COL.upper()+
-        "\n")
+    )
+    
+    # Add derived stat columns
+    for col in constants.TITLES:
+        if col != "flags":
+            csv += col.upper() + ","
 
+    # Trim trailing comma and end the line
+    csv = csv[:-1] + "\n"
+
+    # Add each map and skill as a row
     for map_name in wad_data["map list"]:
         map_data = wad_data["data"][map_name]
         for skill in constants.SKILLS:
@@ -213,20 +215,18 @@ def to_csv(wad_data, options):
             csv += skill + ","
             csv += str(skill_data["monsters"]) + ","
             csv += str(skill_data["hitscanners"]) + ","
-            csv += str(skill_data[constants.HITSCAN_COL]) + ","
             csv += str(skill_data["health points"]) + ","
-            csv += str(skill_data[constants.HEALTH_RATIO_COL]) + ","
             csv += str(skill_data["armor points"]) + ","
-            csv += str(skill_data[constants.ARMOR_RATIO_COL]) + ","
             csv += str(skill_data["bullets"]) + ","
-            csv += str(skill_data[constants.BULLET_DMG_COL]) + ","
             csv += str(skill_data["shells"]) + ","
-            csv += str(skill_data[constants.SHELL_DMG_COL]) + ","
             csv += str(skill_data["rockets"]) + ","
-            csv += str(skill_data[constants.ROCKET_DMG_COL]) + ","
             csv += str(skill_data["plasma cells"]) + ","
-            csv += str(skill_data[constants.PLASMA_DMG_COL])
-            csv += "\n"
+            # Add each derived value
+            for col in constants.TITLES:
+                if col != "flags":
+                    csv += str(skill_data[col]) + ","
+            # Trim trailing comma and end the line
+            csv = csv[:-1] + "\n"
 
     return csv
 
