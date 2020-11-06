@@ -19,9 +19,9 @@ DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
 OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
 USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-Credit to Omgifol, A Python library for manipulation of WAD files.
-Copyright (c) 2005 Fredrik Johansson
-https://sourceforge.net/projects/omgifol/"""
+Dmon uses Omgifol, A Python library for manipulation of WAD files.
+Copyright (c) 2005 Fredrik Johansson, 2017 Devin Acker.
+https://github.com/devinacker/omgifol"""
 
 
 ABOUT = """WAD analysis tool that estimates the toughness of DOOM maps
