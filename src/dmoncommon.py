@@ -257,13 +257,13 @@ def derive_averages(wad_data, options):
         avg_rockets = (avg[skill]["rockets"] * constants.ROCKET_DAMAGE) / avg_mons_hp
         avg_plasma = (avg[skill]["plasma cells"] * constants.PLASMA_DAMAGE) / avg_mons_hp
 
-        avg[skill]["hit scan %"] = round(avg_hscan * 100, 1)
-        avg[skill]["health ratio"] = round(avg_health, 1)
-        avg[skill]["armor ratio"] = round(avg_armor, 1)
-        avg[skill]["bullet ratio"] = round(avg_bullets, 1)
-        avg[skill]["shell ratio"] = round(avg_shells, 1)
-        avg[skill]["rocket ratio"] = round(avg_rockets, 1)
-        avg[skill]["plasma ratio"] = round(avg_plasma, 1)
+        avg[skill][constants.HITSCAN_COL] = round(avg_hscan * 100, 1)
+        avg[skill][constants.HEALTH_RATIO_COL] = round(avg_health, 1)
+        avg[skill][constants.ARMOR_RATIO_COL] = round(avg_armor, 1)
+        avg[skill][constants.BULLET_DMG_COL] = round(avg_bullets, 1)
+        avg[skill][constants.SHELL_DMG_COL] = round(avg_shells, 1)
+        avg[skill][constants.ROCKET_DMG_COL] = round(avg_rockets, 1)
+        avg[skill][constants.PLASMA_DMG_COL] = round(avg_plasma, 1)
 
     wad_data["totals"] = sums
     wad_data["data"]["AVERAGES"] = avg
@@ -323,7 +323,7 @@ def derive_hitscanner_ratio(skill):
         hitscan_ratio = hitscan_count / monster_count * 100
     else:
         hitscan_ratio = 0
-    skill["hit scan %"] = int(round(hitscan_ratio))
+    skill[constants.HITSCAN_COL] = int(round(hitscan_ratio))
 
 
 def derive_armor_and_health_ratio(skill):
@@ -341,8 +341,8 @@ def derive_armor_and_health_ratio(skill):
         health_ratio = 0
         armor_ratio = 0
 
-    skill["health ratio"] = round(health_ratio, 1)
-    skill["armor ratio"] = round(armor_ratio, 1)
+    skill[constants.HEALTH_RATIO_COL] = round(health_ratio, 1)
+    skill[constants.ARMOR_RATIO_COL] = round(armor_ratio, 1)
 
 
 def derive_ammo_ratio(skill):
@@ -367,10 +367,10 @@ def derive_ammo_ratio(skill):
         plasma_ratio = (plasma_count * constants.PLASMA_DAMAGE) / monster_hp
     # else:
 
-    skill["bullet ratio"] = round(bullet_ratio, 1)
-    skill["shell ratio"] = round(shell_ratio, 1)
-    skill["rocket ratio"] = round(rocket_ratio, 1)
-    skill["plasma ratio"] = round(plasma_ratio, 1)
+    skill[constants.BULLET_DMG_COL] = round(bullet_ratio, 1)
+    skill[constants.SHELL_DMG_COL] = round(shell_ratio, 1)
+    skill[constants.ROCKET_DMG_COL] = round(rocket_ratio, 1)
+    skill[constants.PLASMA_DMG_COL] = round(plasma_ratio, 1)
 
 
 def derive_recommendations(map_data, skill, options):
@@ -383,22 +383,22 @@ def derive_recommendations(map_data, skill, options):
     baseline = load_baseline(options)
 
     # Get map values
-    health_ratio = map_data[skill]["health ratio"]
-    armor_ratio = map_data[skill]["armor ratio"]
-    bullet_ratio = map_data[skill]["bullet ratio"]
-    shell_ratio = map_data[skill]["shell ratio"]
-    hitscan = map_data[skill]["hit scan %"]
-    rocket_ratio = map_data[skill]["rocket ratio"]
-    plasma_ratio = map_data[skill]["plasma ratio"]
+    health_ratio = map_data[skill][constants.HEALTH_RATIO_COL]
+    armor_ratio = map_data[skill][constants.ARMOR_RATIO_COL]
+    bullet_ratio = map_data[skill][constants.BULLET_DMG_COL]
+    shell_ratio = map_data[skill][constants.SHELL_DMG_COL]
+    hitscan = map_data[skill][constants.HITSCAN_COL]
+    rocket_ratio = map_data[skill][constants.ROCKET_DMG_COL]
+    plasma_ratio = map_data[skill][constants.PLASMA_DMG_COL]
     
     # Get baseline values
-    bl_health = baseline[skill].get("health ratio", 0)
-    bl_armor = baseline[skill].get("armor ratio", 0)
-    bl_bullet = baseline[skill].get("bullet ratio", 0)
-    bl_shell = baseline[skill].get("shell ratio", 0)
-    bl_hitscan = baseline[skill].get("hit scan %", 0)
-    bl_rocket = baseline[skill].get("rocket ratio", 0)
-    bl_plasma = baseline[skill].get("plasma ratio", 0)
+    bl_health = baseline[skill].get(constants.HEALTH_RATIO_COL, 0)
+    bl_armor = baseline[skill].get(constants.ARMOR_RATIO_COL, 0)
+    bl_bullet = baseline[skill].get(constants.BULLET_DMG_COL, 0)
+    bl_shell = baseline[skill].get(constants.SHELL_DMG_COL, 0)
+    bl_hitscan = baseline[skill].get(constants.HITSCAN_COL, 0)
+    bl_rocket = baseline[skill].get(constants.ROCKET_DMG_COL, 0)
+    bl_plasma = baseline[skill].get(constants.PLASMA_DMG_COL, 0)
 
     # Format the values
     # TODO: investigate removing rounding

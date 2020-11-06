@@ -1,14 +1,3 @@
-"""
-The recommendation codes.
-"""
-RECOMMENDS_HP = "H"
-RECOMMENDS_AP = "A"
-RECOMMENDS_HITSCANS = "!"
-RECOMMENDS_BULLETS = "b"
-RECOMMENDS_SHELLS = "s"
-RECOMMENDS_ROCKETS = "r"
-RECOMMENDS_PLASMA = "p"
-
 LICENSE = """
 Copyright (c) 2019 Wesley (beast) Werner
 
@@ -80,6 +69,18 @@ Decide for yourself if this tool is useful (or not)."""
 
 
 """
+Recommendation codes.
+"""
+RECOMMENDS_HP = "H"
+RECOMMENDS_AP = "A"
+RECOMMENDS_HITSCANS = "!"
+RECOMMENDS_BULLETS = "b"
+RECOMMENDS_SHELLS = "s"
+RECOMMENDS_ROCKETS = "r"
+RECOMMENDS_PLASMA = "p"
+
+
+"""
 Skill titles.
 """
 SKILLS = ("easy", "medium", "hard")
@@ -88,8 +89,28 @@ SKILLS = ("easy", "medium", "hard")
 """
 Statistic titles.
 """
-TITLES = ("hit scan %", "health ratio", "armor ratio", "bullet ratio",
-    "shell ratio", "rocket ratio", "plasma ratio", "flags")
+HITSCAN_COL = "hit scan %"
+HEALTH_RATIO_COL = "health bon^"
+ARMOR_RATIO_COL = "armor bon^"
+BULLET_DMG_COL = "bullet dmg^"
+SHELL_DMG_COL = "shell dmg^"
+ROCKET_DMG_COL = "rocket dmg^"
+PLASMA_DMG_COL = "plasma dmg^"
+
+
+"""
+Ordered list of statistics to calculate and print.
+"""
+TITLES = (
+    HITSCAN_COL,
+    HEALTH_RATIO_COL,
+    ARMOR_RATIO_COL,
+    BULLET_DMG_COL,
+    SHELL_DMG_COL,
+    ROCKET_DMG_COL,
+    PLASMA_DMG_COL,
+    "flags"
+)
 
 
 """

@@ -184,9 +184,25 @@ def to_csv(wad_data, options):
     Output statistics as CSV data.
     """
 
-    csv = ("FILE,MAP,SKILL,MONSTERS,HITSCANNERS,HIT SCAN %,HEALTH POINTS,HEALTH RATIO,"
-           "ARMOR POINTS,ARMOR RATIO,BULLETS,"
-           "BULLET RATIO,SHELLS,SHELL RATIO,ROCKETS,ROCKET RATIO,CELLS,PLASMA RATIO\n")
+    csv = (
+        "FILE,MAP,"
+        "SKILL,"
+        "MONSTERS,"
+        "HITSCANNERS,"
+        +constants.HITSCAN_COL.upper()+","
+        "HEALTH POINTS,"
+        +constants.HEALTH_RATIO_COL.upper()+","
+        "ARMOR POINTS,"
+        +constants.ARMOR_RATIO_COL.upper()+","
+        "BULLETS,"
+        +constants.BULLET_DMG_COL.upper()+","
+        "SHELLS,"
+        +constants.SHELL_DMG_COL.upper()+","
+        "ROCKETS,"
+        +constants.ROCKET_DMG_COL.upper()+","
+        "CELLS,"
+        +constants.PLASMA_DMG_COL.upper()+
+        "\n")
 
     for map_name in wad_data["map list"]:
         map_data = wad_data["data"][map_name]
@@ -197,19 +213,19 @@ def to_csv(wad_data, options):
             csv += skill + ","
             csv += str(skill_data["monsters"]) + ","
             csv += str(skill_data["hitscanners"]) + ","
-            csv += str(skill_data["hit scan %"]) + ","
+            csv += str(skill_data[constants.HITSCAN_COL]) + ","
             csv += str(skill_data["health points"]) + ","
-            csv += str(skill_data["health ratio"]) + ","
+            csv += str(skill_data[constants.HEALTH_RATIO_COL]) + ","
             csv += str(skill_data["armor points"]) + ","
-            csv += str(skill_data["armor ratio"]) + ","
+            csv += str(skill_data[constants.ARMOR_RATIO_COL]) + ","
             csv += str(skill_data["bullets"]) + ","
-            csv += str(skill_data["bullet ratio"]) + ","
+            csv += str(skill_data[constants.BULLET_DMG_COL]) + ","
             csv += str(skill_data["shells"]) + ","
-            csv += str(skill_data["shell ratio"]) + ","
+            csv += str(skill_data[constants.SHELL_DMG_COL]) + ","
             csv += str(skill_data["rockets"]) + ","
-            csv += str(skill_data["rocket ratio"]) + ","
+            csv += str(skill_data[constants.ROCKET_DMG_COL]) + ","
             csv += str(skill_data["plasma cells"]) + ","
-            csv += str(skill_data["plasma ratio"])
+            csv += str(skill_data[constants.PLASMA_DMG_COL])
             csv += "\n"
 
     return csv

@@ -261,7 +261,7 @@ class TestDerivingMethods(unittest.TestCase):
         map_data = wad_stats["data"]["MAP01"]
         easy_data = map_data["easy"]
         expected = 28   # round(5 / 18.0 * 100)
-        actual = easy_data["hit scan %"]
+        actual = easy_data[constants.HITSCAN_COL]
         self.assertEqual(actual, expected)
 
     def test_armor_ratio(self):
@@ -271,7 +271,7 @@ class TestDerivingMethods(unittest.TestCase):
         map_data = wad_stats["data"]["MAP01"]
         easy_data = map_data["easy"]
         expected = 16.7   # armor points / monsters (301 / 18)
-        actual = easy_data["armor ratio"]
+        actual = easy_data[constants.ARMOR_RATIO_COL]
         self.assertEqual(actual, expected)
 
     def test_health_ratio(self):
@@ -281,7 +281,7 @@ class TestDerivingMethods(unittest.TestCase):
         map_data = wad_stats["data"]["MAP01"]
         easy_data = map_data["easy"]
         expected = 2   # health points / monsters (36 / 18)
-        actual = easy_data["health ratio"]
+        actual = easy_data[constants.HEALTH_RATIO_COL]
         self.assertEqual(actual, expected)
 
     def test_bullet_ratio(self):
@@ -296,7 +296,7 @@ class TestDerivingMethods(unittest.TestCase):
         map_data = wad_stats["data"]["MAP01"]
         easy_data = map_data["easy"]
         expected = 8.8
-        actual = easy_data["bullet ratio"]
+        actual = easy_data[constants.BULLET_DMG_COL]
         self.assertEqual(actual, expected)
 
     def test_shell_ratio(self):
@@ -311,7 +311,7 @@ class TestDerivingMethods(unittest.TestCase):
         map_data = wad_stats["data"]["MAP02"]
         easy_data = map_data["easy"]
         expected = 60
-        actual = easy_data["shell ratio"]
+        actual = easy_data[constants.SHELL_DMG_COL]
         self.assertEqual(actual, expected)
 
     def test_rocket_ratio(self):
@@ -326,7 +326,7 @@ class TestDerivingMethods(unittest.TestCase):
         map_data = wad_stats["data"]["MAP02"]
         easy_data = map_data["easy"]
         expected = 12.5
-        actual = easy_data["rocket ratio"]
+        actual = easy_data[constants.ROCKET_DMG_COL]
         self.assertEqual(actual, expected)
 
     def test_plasma_ratio(self):
@@ -347,8 +347,8 @@ class TestDerivingMethods(unittest.TestCase):
         hard_data = map_data["hard"]
         easy_expected = 1.7
         hard_expected = 0.4
-        easy_actual = easy_data["plasma ratio"]
-        hard_actual = hard_data["plasma ratio"]
+        easy_actual = easy_data[constants.PLASMA_DMG_COL]
+        hard_actual = hard_data[constants.PLASMA_DMG_COL]
         self.assertEqual(easy_actual, easy_expected)
         self.assertEqual(hard_actual, hard_expected)
 
@@ -384,11 +384,11 @@ class TestDerivingMethods(unittest.TestCase):
         expected_armor = 15.1
         expected_bullet = 8.8
         expected_shell = 0.5
-        self.assertEqual(avg["easy"]["hit scan %"], expected_hitscan)
-        self.assertEqual(avg["easy"]["health ratio"], expected_health)
-        self.assertEqual(avg["easy"]["armor ratio"], expected_armor)
-        self.assertEqual(avg["easy"]["bullet ratio"], expected_bullet)
-        self.assertEqual(avg["easy"]["shell ratio"], expected_shell)
+        self.assertEqual(avg["easy"][constants.HITSCAN_COL], expected_hitscan)
+        self.assertEqual(avg["easy"][constants.HEALTH_RATIO_COL], expected_health)
+        self.assertEqual(avg["easy"][constants.ARMOR_RATIO_COL], expected_armor)
+        self.assertEqual(avg["easy"][constants.BULLET_DMG_COL], expected_bullet)
+        self.assertEqual(avg["easy"][constants.SHELL_DMG_COL], expected_shell)
 
 
 class TestBaselineData(unittest.TestCase):
