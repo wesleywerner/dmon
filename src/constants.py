@@ -1,4 +1,4 @@
-VERSION = "dmon 1.1 (August 2019)"
+VERSION = "dmon 1.2 (November 2020)"
 
 LICENSE = """
 Copyright (c) 2019 Wesley (beast) Werner

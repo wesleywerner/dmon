@@ -1,0 +1,11 @@
+Version 1.2 (November 2020)
+- Ignore the --compare option if --diff option is set
+- Pivot stats as columns instead of rows. Provides a new --pivot parameter for the old format.
+- Update Omgifol + Python 3 compatibility
+- Calculate bullet and shell ratio as damage over total monster hit points
+- Derive armor and health bonuses against monster attack points
+- Add rockets and plasma munition types
+- Update baselines to use the new derivation calculations
+
+Version 1.1 (August 2019)
+- Initial release
