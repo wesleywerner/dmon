@@ -131,3 +131,30 @@ monster_hp = {
     3005: 400, # cacodemon
     3006: 100 # lost soul
 }
+
+
+"""
+Monster attack damages lookup.
+Damage is taken as the median damage per monster attack.
+https://doomwiki.org/wiki/Spiderdemon#Data
+"""
+monster_ap = {
+    7: 27, # spider mastermind
+    9: 27, # shotgun guy
+    16: 654, # cyberdemon
+    58: 22, # spectre
+    64: 55, # archvile
+    65: 9, # commando/chaingunner
+    66: 83, # revenant (30 punch + 50 missile)
+    67: 32, # mancubus (per fireball)
+    68: 25, # arachnotron
+    69: 90, # hell knight (50 claw attack + 40 fireball)
+    71: 75, # pain elemental (no attack, but assumes 5x lost sould spawns)
+    84: 9, # ss guy
+    3001: 12, # imp (melee and fireball attacks are the same)
+    3002: 22, # demon
+    3003: 90, # baron of hell (50 claw + 40 fireball)
+    3004: 9, # zombieman
+    3005: 30, # cacodemon
+    3006: 15 # lost soul (goring attack)
+}

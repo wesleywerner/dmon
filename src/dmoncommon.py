@@ -33,6 +33,14 @@ def hit_points_of(id):
     """
     return lookup.monster_hp.get(id, 0)
 
+
+def attack_points_of(id):
+    """
+    Get the attack points of id (a monster).
+    """
+    return lookup.monster_ap.get(id, 0)
+
+
 def health_points_of(id, with_bonus):
     """
     Get the health points of id.
@@ -94,6 +102,7 @@ def new_map_data_object():
         "hitscanners":0,
         "meaty monsters":0,
         "monster hit points":0,
+        "monster attack points":0,
         "health points":0,
         "armor points":0,
         "shells": 0,
@@ -178,6 +187,7 @@ def extract_statistics(options):
             shells_inc = shells_of(thing.type)
             bullets_inc = bullets_of(thing.type)
             hit_points = hit_points_of(thing.type)
+            attack_points = attack_points_of(thing.type)
             rockets_inc = rockets_of(thing.type)
             plasma_inc = plasma_of(thing.type)
 
@@ -194,6 +204,7 @@ def extract_statistics(options):
                     skill["shells"] += shells_inc
                     skill["bullets"] += bullets_inc
                     skill["monster hit points"] += hit_points
+                    skill["monster attack points"] += attack_points
                     skill["rockets"] += rockets_inc
                     skill["plasma cells"] += plasma_inc
 
@@ -215,8 +226,8 @@ def derive_averages(wad_data, options):
     skill_order = ("easy", "medium", "hard")
     column_names = ("monsters", "hitscanners", "health points",
                     "armor points", "bullets", "shells", "rockets",
-                    "plasma cells",
-                    "monster hit points")
+                    "plasma cells", "monster hit points",
+                    "monster attack points")
 
     # Take each stat from each map and compile them into grouped lists.
     # eg grouped_values["easy"]["shells"] = [10, 20, ...]
@@ -248,10 +259,10 @@ def derive_averages(wad_data, options):
     for skill in skill_order:
         avg_mons = float(avg[skill]["monsters"])
         avg_mons_hp = float(avg[skill]["monster hit points"])
-        # TODO: avg_mons_ap
+        avg_mons_ap = float(avg[skill]["monster attack points"])
         avg_hscan = avg[skill]["hitscanners"] / avg_mons
-        avg_health = avg[skill]["health points"] / avg_mons #avg_mons_ap
-        avg_armor = avg[skill]["armor points"] / avg_mons   #avg_mons_ap
+        avg_health = avg[skill]["health points"] / avg_mons_ap
+        avg_armor = avg[skill]["armor points"] / avg_mons_ap
         avg_bullets = (avg[skill]["bullets"] * constants.BULLET_DAMAGE) / avg_mons_hp
         avg_shells = (avg[skill]["shells"] * constants.SHELL_DAMAGE) / avg_mons_hp
         avg_rockets = (avg[skill]["rockets"] * constants.ROCKET_DAMAGE) / avg_mons_hp
@@ -332,17 +343,17 @@ def derive_armor_and_health_ratio(skill):
     """
     health_points = skill["health points"]
     armor_points = skill["armor points"]
-    monster_count = float(skill["monsters"])
+    monster_ap = float(skill["monster attack points"])
 
-    if monster_count > 0:
-        health_ratio = health_points / monster_count
-        armor_ratio = armor_points / monster_count
+    if monster_ap > 0:
+        health_ratio = health_points / monster_ap
+        armor_ratio = armor_points / monster_ap
     else:
         health_ratio = 0
         armor_ratio = 0
 
-    skill[constants.HEALTH_RATIO_COL] = round(health_ratio, 1)
-    skill[constants.ARMOR_RATIO_COL] = round(armor_ratio, 1)
+    skill[constants.HEALTH_RATIO_COL] = round(health_ratio, 2)
+    skill[constants.ARMOR_RATIO_COL] = round(armor_ratio, 2)
 
 
 def derive_ammo_ratio(skill):
