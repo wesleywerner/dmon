@@ -453,11 +453,7 @@ def derive_recommendations(map_data, skill, options):
 
 def load_baseline(options):
     code = options["--baseline"].upper()
-    if code in baselines.lookup:
-        return baselines.lookup.get(code, None)
-    else:
-        print("error: %s is not a valid baseline code" % (code))
-        sys.exit(255)
+    return baselines.lookup.get(code, None)
 
 
 def format_digit(number, options):

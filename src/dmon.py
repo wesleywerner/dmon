@@ -279,9 +279,22 @@ def process_help_and_about_options(options):
     return False
 
 
+def valid_baseline_specified(options):
+    code = options["--baseline"].upper()
+    if code in baselines.lookup:
+        return True
+    else:
+        print("%s is not a valid baseline. "
+        "A Cyberdemon blasts you to pieces." % (code))
+        return False
+
+
 def main():
     options = docopt(__doc__, version=__version__)
     if isinstance(options, dict):
+        if not valid_baseline_specified(options):
+            sys.exit(255)
+
         if not process_help_and_about_options(options):
             process_wad(options)
     else:
