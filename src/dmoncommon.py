@@ -456,11 +456,18 @@ def format_digit(number, options):
     if options["--fixed"] == True:
         return str(round(float(number),1))
     else:
-        # If value rounds to zero return a float with leading zero sliced
-        value = round(number, 1)
+        # If value rounds to zero: return a float with leading zero sliced.
+        # Returns either 1 or 2 decimal float, depending which one is not 0.
+        # This gives fractions like .2 and .05
+        value1 = round(number, 1)
+        value2 = round(number, 2)
         int_value = int(round(number))
-        if int_value == 0 and value != 0.0:
-            return str(value)[1:]
+        if int_value == 0 and value1 != 0.0:
+            # Rounded to 1 decimal has value
+            return str(value1)[1:]
+        elif int_value == 0 and value2 != 0.0:
+            # Rounded to 2 decimals has value
+            return str(value2)[1:]
         else:
             return str(int_value)
 
