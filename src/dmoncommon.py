@@ -456,6 +456,24 @@ def load_baseline(options):
     return baselines.lookup.get(code, None)
 
 
+def trim_leading_trailing_zeros(value):
+    """
+    Trim leading zeros:
+        "0.3" > ".3"
+        "-0.3" > "-.3"
+    Trim trailing zeros:
+        "1.0" > "1"
+    """
+    if value.startswith("0."):
+        value = value[1:]
+    if value.startswith("-0."):
+        value = "-" + value[2:]
+    if value.endswith(".0"):
+        value = value[:-2]
+    if value == "":
+        value = "0"
+    return value
+
 def format_digit(number, options):
     """
     Format a number as integer of real.
@@ -471,13 +489,13 @@ def format_digit(number, options):
         int_value = int(round(number))
         if int_value == 0 and value1 != 0.0:
             # Always display 1st-precision float instead of rounding down to 0
-            return str(value1)[1:]
+            return trim_leading_trailing_zeros(str(value1))
         elif int_value == 0 and value2 != 0.0:
             # Always display 2nd-precision float instead of rounding down to 0
-            return str(value2)[1:]
+            return trim_leading_trailing_zeros(str(value2))
         elif int_value == 1 and number < 1:
             # Always display float instead of rounding up to 1
-            return str(value1)[1:]
+            return trim_leading_trailing_zeros(str(value1))
         else:
             return str(int_value)
 
