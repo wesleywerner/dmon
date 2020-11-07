@@ -65,6 +65,9 @@ def process_wad(options):
     wad_data = dmoncommon.extract_statistics(options)
 
     fmt = options["--format"]
+    if fmt is not None:
+        fmt = fmt.upper()
+    
     if len(wad_data["map list"]) == 0:
         map_pattern = options["<pattern>"] or "*"
         print("No maps in WAD, or none matched pattern '%s'."
@@ -74,11 +77,11 @@ def process_wad(options):
             print(to_tabular(wad_data, options, True))
         else:
             print(to_tabular(wad_data, options, False))
-    elif fmt == "csv":
+    elif fmt == "CSV":
         print(to_csv(wad_data, options))
-    elif fmt == "json":
+    elif fmt == "JSON":
         print(to_json(wad_data))
-    elif fmt == "dump":
+    elif fmt == "DUMP":
         print(to_baseline_dump(wad_data))
     else:
         print("Invalid output format '%s'."
