@@ -89,13 +89,13 @@ SKILLS = ("easy", "medium", "hard")
 """
 Statistic titles.
 """
-HITSCAN_COL = "hit scan %"
-HEALTH_RATIO_COL = "health bon^"
-ARMOR_RATIO_COL = "armor bon^"
-BULLET_DMG_COL = "bullet dmg^"
-SHELL_DMG_COL = "shell dmg^"
-ROCKET_DMG_COL = "rocket dmg^"
-PLASMA_DMG_COL = "plasma dmg^"
+HITSCAN_COL = "hitscan %"
+HEALTH_RATIO_COL = "health/AP"
+ARMOR_RATIO_COL = "armor/AP"
+BULLET_DMG_COL = "bullet/HP"
+SHELL_DMG_COL = "shell/HP"
+ROCKET_DMG_COL = "rocket/HP"
+PLASMA_DMG_COL = "plasma/HP"
 
 
 """

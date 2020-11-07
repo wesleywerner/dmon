@@ -119,7 +119,7 @@ def to_tabular(wad_data, options, list_averages):
     
     # Format width of first column.
     # This will be smaller for pivoted output.
-    first_column_width = 12
+    first_column_width = 14
     other_column_width = 8
 
     cmp_mode = options["--compare"]
