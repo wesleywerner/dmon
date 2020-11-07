@@ -270,7 +270,7 @@ class TestDerivingMethods(unittest.TestCase):
         wad_stats = dmoncommon.extract_statistics(options)
         map_data = wad_stats["data"]["MAP01"]
         easy_data = map_data["easy"]
-        expected = 16.7   # armor points / monsters (301 / 18)
+        expected = 0.23   # armor points / monster attack points (301 / 1286)
         actual = easy_data[constants.ARMOR_RATIO_COL]
         self.assertEqual(actual, expected)
 
@@ -280,7 +280,7 @@ class TestDerivingMethods(unittest.TestCase):
         wad_stats = dmoncommon.extract_statistics(options)
         map_data = wad_stats["data"]["MAP01"]
         easy_data = map_data["easy"]
-        expected = 2   # health points / monsters (36 / 18)
+        expected = .03   # health points / monster attack (36 / 1286)
         actual = easy_data[constants.HEALTH_RATIO_COL]
         self.assertEqual(actual, expected)
 
@@ -380,10 +380,10 @@ class TestDerivingMethods(unittest.TestCase):
         wad_stats = dmoncommon.extract_statistics(options)
         avg = wad_stats["data"]["AVERAGES"]
         expected_hitscan = 35.0
-        expected_health = 1.8
-        expected_armor = 15.1
-        expected_bullet = 8.8
-        expected_shell = 0.5
+        expected_health = 0.03
+        expected_armor = 0.23
+        expected_bullet = 8.82
+        expected_shell = 0.51
         self.assertEqual(avg["easy"][constants.HITSCAN_COL], expected_hitscan)
         self.assertEqual(avg["easy"][constants.HEALTH_RATIO_COL], expected_health)
         self.assertEqual(avg["easy"][constants.ARMOR_RATIO_COL], expected_armor)
