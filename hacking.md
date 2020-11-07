@@ -8,7 +8,7 @@ Generate a new baseline by giving the `--average --format=dump` options. The ent
 
 # RELEASE STEPS
 
-1. update __version__ in `dmon.py`
+1. update VERSION in `constants.py`
 2. git commit && git tag "1.n" && git push && git push origin "1.n"
 
 # FREEZING

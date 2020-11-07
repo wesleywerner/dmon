@@ -1,3 +1,5 @@
+VERSION = "dmon 1.1 (August 2019)"
+
 LICENSE = """
 Copyright (c) 2019 Wesley (beast) Werner
 

@@ -46,7 +46,7 @@ import constants
 import baselines
 import dmoncommon
 
-__version__ = "dmon 1.1 (August 2019)"
+__version__ = constants.VERSION
 
 
 def test_file_exists(options):
