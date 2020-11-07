@@ -268,13 +268,13 @@ def derive_averages(wad_data, options):
         avg_rockets = (avg[skill]["rockets"] * constants.ROCKET_DAMAGE) / avg_mons_hp
         avg_plasma = (avg[skill]["plasma cells"] * constants.PLASMA_DAMAGE) / avg_mons_hp
 
-        avg[skill][constants.HITSCAN_COL] = round(avg_hscan * 100, 1)
-        avg[skill][constants.HEALTH_RATIO_COL] = round(avg_health, 1)
-        avg[skill][constants.ARMOR_RATIO_COL] = round(avg_armor, 1)
-        avg[skill][constants.BULLET_DMG_COL] = round(avg_bullets, 1)
-        avg[skill][constants.SHELL_DMG_COL] = round(avg_shells, 1)
-        avg[skill][constants.ROCKET_DMG_COL] = round(avg_rockets, 1)
-        avg[skill][constants.PLASMA_DMG_COL] = round(avg_plasma, 1)
+        avg[skill][constants.HITSCAN_COL] = round(avg_hscan * 100, 2)
+        avg[skill][constants.HEALTH_RATIO_COL] = round(avg_health, 2)
+        avg[skill][constants.ARMOR_RATIO_COL] = round(avg_armor, 2)
+        avg[skill][constants.BULLET_DMG_COL] = round(avg_bullets, 2)
+        avg[skill][constants.SHELL_DMG_COL] = round(avg_shells, 2)
+        avg[skill][constants.ROCKET_DMG_COL] = round(avg_rockets, 2)
+        avg[skill][constants.PLASMA_DMG_COL] = round(avg_plasma, 2)
 
     wad_data["totals"] = sums
     wad_data["data"]["AVERAGES"] = avg
