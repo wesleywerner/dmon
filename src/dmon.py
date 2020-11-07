@@ -256,12 +256,14 @@ def print_legend_flags(options):
     """
     Print the list of recommendation flags with baseline values.
     """
-    baseline = dmoncommon.load_baseline(options)
-    print("%s: Health ratio is too low" % (constants.RECOMMENDS_HP))
-    print("%s: Armor ratio is too low" % (constants.RECOMMENDS_AP))
-    print("%s: Bullet ratio is too low" % (constants.RECOMMENDS_BULLETS))
-    print("%s: Shell ratio is too low" % (constants.RECOMMENDS_SHELLS))
-    print("%s: Hitscanner percentage is too high" % (constants.RECOMMENDS_HITSCANS))
+    print("AP: Monster attack points   HP: Monster hit points")
+    print(" %s: Health ratio too low     %s: Armor ratio too low"
+        % (constants.RECOMMENDS_HP, constants.RECOMMENDS_AP))
+    print(" %s: Bullet ratio too low     %s: Shell ratio too low"
+        % (constants.RECOMMENDS_BULLETS, constants.RECOMMENDS_SHELLS))
+    print(" %s: Rocket ratio too low     %s: Plasma ratio too low"
+        % (constants.RECOMMENDS_ROCKETS, constants.RECOMMENDS_PLASMA))
+    print(" %s: Hitscan %% too high" % (constants.RECOMMENDS_HITSCANS))
 
 
 def process_help_and_about_options(options):
