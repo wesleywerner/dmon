@@ -92,38 +92,39 @@ WAD analysis tool that estimates the toughness of DOOM maps
 It queries one or more maps in a WAD/PWAD and prints out some crunched
 numbers to try and answer those hard questions.
 
-It tries to help map creators answer these questions:
- * How many monsters are hitscanners?
- * How many health and armor pickups are there?
- * How much damage can the player inflict on all monsters given the 
-   amount of ammo in a map?
+It tries to help map creators answer:
+ * The percentage of monsters that use hitscan attacks
+ * How much health and armor pickups there are, relative to how much
+   damage monsters can do to the player
+ * The amount of damage the player can inflict on monsters, given the 
+   amount of ammo
 
-To accomplish this the following data points are gathered:
- 1) count of monsters that are meaty versus hitscanners
- 2) sum of health points for health bonus(1), stimpacks(10), medkits(25)
- 3) sum of armor points for armor bonus(1), green armor(100), blue armor(200)
- 4) count of ammo rounds (including those that enemies will drop)
+The following data points are gathered:
+ 1) sum damage and hit points of monsters, and how many use hitscan attacks
+ 2) sum health points for health bonus(1), stimpacks(10), medkits(25)
+ 3) sum armor points for armor bonus(1), green armor(100), blue armor(200)
+ 4) sum of ammunition rounds (including weapons and enemy drops)
 
-These numbers are then derived from the gathered data:
- * Health ratio: number of health points per monster
- * Armor ratio: number of armor points per monster
- * Bullet ratio: Damage all bullets can inflict vs total monster hit points.
- * Shell ratio: Damage all shells can inflict vs total monster hit points.
+These values are then derived:
+ * Health and Armor bonus over median monster attack damage
+ * Ammunitions damage over monster hit points
 
-Note: bullet and shell damage is taken as the minimum damage possible per round.
-For shells the damage is measured per pellet. This is a known common metric for
-both the shotgun and super shotgun.
+A shell damage of 1 indicates enough shells to kill each monster at least once,
+assuming the median amount of damage is inflicted.
 
-A bullet ratio of 1 means there are enough bullets to kill every monster at
-least once, assuming the round does the least amount of damage possible.
+Bullet damage is the median for the Chaingun, per tap of the trigger.
+Shell damage is the median for the shotgun, per shot.
+Rocket damage is the median for the rocket launcher, per rocket.
+Plasma damage is the median for the plasma gun, per shot.
 
-To assist the mapper in making sense of these values, a baseline
-of recommended values can be used for comparison.
-The default baseline is DOOM2, and can be changed with the -b option.
+To help put these numbers in perspective, they are compared to a baseline and
+dmon makes recommendations based on the outcome.
+The default baseline is DOOM2 and can be changed with the --baseline option.
 If a metric falls outside the baseline a recommendation is made.
+You can print the legend of these recommendations with the --legend option.
 
-Note: Berserk(100), Soulsphere(100) and Megasphere(200) items are
-NOT counted by default. To count these use the "--bonus" option.
+Note: Berserk(100), Soul sphere(100) and Megasphere(200) items are
+not counted by default. To count these use the "--bonus" option.
 
 Dmon uses Omgifol to read WAD files (see --license).
 
@@ -133,61 +134,81 @@ Decide for yourself if this tool is useful (or not).
 
 # GUIDE
 
-We will now query E1M9 in doom.wad and examine each column:
+This short guide will walk you through a practical example: E1M9 in `doom.wad`.
 
-    $ dmon doom.wad E1M9
-    [doom.wad E1M9]
-    SKILL    HSCAN%  HEALTH^   ARMOR^  BULLET^   SHELL^    FLAGS
-    easy         24        7        4       14        2      HAs
-    medium       36        3        2        6        2      HA!
-    hard         33        2        1        4        2      HA!
+```
+[doom.wad E1M9]
+                  EASY  MEDIUM    HARD
+hitscan %           24      36      33
+health/AP           .5      .2      .1
+armor/AP            .3      .1      .1
+bullet/HP            4       2       1
+shell/HP             2       2       2
+rocket/HP           .6      .2      .2
+plasma/HP            0       0       0
+flags                p      p!      p!
+```
 
-**HSCAN%**
-This column shows the percentage of monsters that are hitscanners.
-More hitscanners generally makes play harder.
+**hitscan %**
+This shows the percentage of monsters that use a hitscan attack. More hitscanners generally makes play harder, as these attacks cannot be dodged.
 
-**HEALTH^**
-Health ratio is the number of health points for every monster.
+**health/AP**
+This ratio is the total health pickups over total monster attack points. If this number is 1 it indicates the player can fully heal if every monster on the map gets one attack against the player, assuming median damage is dealt.
 
-**ARMOR^**
-Armor ratio is the number of armor points for every monster.
+In E1M9 there is enough health items to heal 50% if all monsters attacked the player once for the easy skill, 20% on medium skill and 10% on hard.
 
-**BULLET^**
-Bullet ratio is the number of bullets for every monster.
+**armor/AP**
+This ratio is the total armor pickups over total monster attack points. If this number is 1 it indicates one armor point for every monster attack point on the map.
 
-**SHELL^**
-Shell ratio is the number of shells for every monster.
+It should be noted that armor class (security/combat) is not factored in, and this ratio is strictly for comparative purposes to the baseline.
 
-**FLAGS**
-This column shows flags raised when results fall outside the baseline, which is DOOM2 by default.
-If you add the `--legend` option then the recommendation legend prints at the end of the output:
+**bullet/HP, shell/HP, rocket/HP, plasma/HP**
+Total damage for each munition type, over total monster hit points. A value of 1 indicates enough ammunition to kill each monster on the map at least once, assuming the median amount of damage is inflicted.
 
-    H: Health ratio is too low
-    A: Armor ratio is too low
-    b: Bullet ratio is too low
-    s: Shell ratio is too low
-    !: Hitscanner percentage is too high
+In E1M9 there are enough shells (factor of `2`) to kill each monster twice over.
 
-When tweaking a map to meet the baseline, use the `--compare` option to print actual/baseline values.
-Now we can see that E1M9 has less health and armor than the DOOM2 average:
+**recommendation flags**
+These are raised when the results fall outside the baseline. Use the `--legend` option to print the legend with the output.
 
-    $ dmon doom.wad E1M9 --compare
-    [doom.wad E1M9 versus DOOM2]
-    SKILL    HSCAN%  HEALTH^   ARMOR^  BULLET^   SHELL^    FLAGS
-    easy      24/39      7/8      4/6     14/8      2/4      HAs
-    medium    36/35      3/4      2/3      6/4      2/2      HA!
-    hard      33/32      2/3      1/2      4/3      2/2      HA!
+```
+AP: Monster attack points   HP: Monster hit points
+ H: Health ratio too low     A: Armor ratio too low
+ b: Bullet ratio too low     s: Shell ratio too low
+ r: Rocket ratio too low     p: Plasma ratio too low
+ !: Hitscan % too high
+```
 
-Another view to distinguish variance is the `--diff` option, which shows the difference between actual and baseline:
+When tweaking a map to meet the baseline, use the `--compare` option to print `actual/baseline` values side-by-side:
 
-    $ dmon doom.wad E1M9 --diff
-    [doom.wad E1M9 versus DOOM2]
-    SKILL    HSCAN%  HEALTH^   ARMOR^  BULLET^   SHELL^    FLAGS
-    easy        -15       -1       -2       +6       -2      HAs
-    medium       +1       -1       -1       +2        0      HA!
-    hard         +1       -1       -1       +1       +0      HA!
+```
+$ dmon doom.wad E1M9 --compare
+[doom.wad E1M9 versus DOOM2]
+                  EASY  MEDIUM    HARD
+hitscan %        24/38   36/35   33/32
+health/AP        .5/.3   .2/.2   .1/.1
+armor/AP         .3/.2   .1/.1   .1/.1
+bullet/HP          4/1    2/.6    1/.4
+shell/HP           2/2     2/1    2/.8
+rocket/HP        .6/.5   .2/.2   .2/.2
+plasma/HP          0/2    0/.8    0/.6
+flags                p      p!      p!
+```
 
-This gives a clear difference, if you want to increase the precision add the `--fixed` option to enable fixed-point float numbers.
+Another way to distinguish variance is with the `--diff` option, which prints the difference between actual and baseline:
+
+```
+$ dmon doom.wad E1M9 --diff
+[doom.wad E1M9 versus DOOM2]
+                  EASY  MEDIUM    HARD
+hitscan %          -14      +1     +.7
+health/AP          +.2    -.03    +.02
+armor/AP           +.1       0    -.03
+bullet/HP           +3      +1     +.8
+shell/HP           +.5      +1     +.9
+rocket/HP          +.1       0       0
+plasma/HP           -2      -1      -1
+flags                p      p!      p!
+```
 
 ## MORE EXAMPLES
 
@@ -195,7 +216,7 @@ Average for all DOOM2 maps:
 
     $ dmon DOOM2.WAD --average
 
-Show stats for maps 1-4 counting bonus items, with legend:
+Show stats for maps 1-4, counting bonus items, and print the legend:
 
     $ dmon DOOM2.WAD MAP0[1234] --legend --bonus
 
@@ -203,41 +224,40 @@ Dump all values to csv:
 
     $ dmon DOOM2.WAD --format=csv
 
-Show stats for all maps implemented in your PWAD, with baseline values
-side-by-side for comparison - great for optimizing your map:
-
-    $ dmon MYAWESOMEMAP.WAD --compare
-
 # TESTS
 
-A small collection of unit tests are implemented for regression testing.
+A collection of unit tests are implemented for regression testing.
 
-    $ python tests.py -v
-    Baseline expected keys exist ... ok
-    Baseline values are numbers ... ok
-    Derive armor to monster ratio ... ok
-    Derive average ratios ... ok
-    Derive averages ... ok
-    Derive bullet to monster ratio ... ok
-    Derive health to monster ratio ... ok
-    Derive hitscanner percentage ... ok
-    Derive recommendation codes ... skipped 'not implemented'
-    Derive shell to monster ratio ... ok
-    Count armor points ... ok
-    Count armor points including bonus items ... ok
-    Count bullets ... ok
-    Extraction returns statistics object ... ok
-    Count health points ... ok
-    Count health points including bonus items ... ok
-    Count hitscanners ... ok
-    Count meaty monsters ... ok
-    Count shells ... ok
-    Count items with varied skill flags ... ok
+```
+$ python tests.py -v
+Baseline expected keys exist ... ok
+Baseline values are numbers ... ok
+Derive armor to monster ratio ... ok
+Derive average ratios ... ok
+Derive averages ... ok
+Derive bullet damage to monster hit points ratio. ... ok
+Derive health to monster ratio ... ok
+Derive hitscanner percentage ... ok
+Derive plasma damage to monster hit points ratio. ... ok
+Derive rocket damage to monster hit points ratio. ... ok
+Derive shell damage to monster hit points ratio. ... ok
+Count armor points ... ok
+Count armor points including bonus items ... ok
+Count bullets ... ok
+Extraction returns statistics object ... ok
+Count health points ... ok
+Count health points including bonus items ... ok
+Count hitscanners ... ok
+Count meaty monsters ... ok
+Count monster hit points ... ok
+Count plasma ... ok
+Count rockets ... ok
+Count shells ... ok
+Count items with varied skill flags ... ok
 
-    ----------------------------------------------------------------------
-    Ran 20 tests in 0.193s
-
-    OK
+----------------------------------------------------------------------
+Ran 24 tests in 0.159s
+```
 
 # CREDITS
 

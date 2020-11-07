@@ -29,38 +29,39 @@ ABOUT = """WAD analysis tool that estimates the toughness of DOOM maps
 It queries one or more maps in a WAD/PWAD and prints out some crunched
 numbers to try and answer those hard questions.
 
-It tries to help map creators answer these questions:
- * How many monsters are hitscanners?
- * How many health and armor pickups are there?
- * How much damage can the player inflict on all monsters given the 
-   amount of ammo in a map?
+It tries to help map creators answer:
+ * The percentage of monsters that use hitscan attacks
+ * How much health and armor pickups there are, relative to how much
+   damage monsters can do to the player
+ * The amount of damage the player can inflict on monsters, given the 
+   amount of ammo
 
-To accomplish this the following data points are gathered:
- 1) count of monsters that are meaty versus hitscanners
- 2) sum of health points for health bonus(1), stimpacks(10), medkits(25)
- 3) sum of armor points for armor bonus(1), green armor(100), blue armor(200)
- 4) count of ammo rounds (including those that enemies will drop)
+The following data points are gathered:
+ 1) sum damage and hit points of monsters, and how many use hitscan attacks
+ 2) sum health points for health bonus(1), stimpacks(10), medkits(25)
+ 3) sum armor points for armor bonus(1), green armor(100), blue armor(200)
+ 4) sum of ammunition rounds (including weapons and enemy drops)
 
-These numbers are then derived from the gathered data:
- * Health ratio: number of health points per monster
- * Armor ratio: number of armor points per monster
- * Bullet ratio: Damage all bullets can inflict vs total monster hit points.
- * Shell ratio: Damage all shells can inflict vs total monster hit points.
+These values are then derived:
+ * Health and Armor bonus over median monster attack damage
+ * Ammunitions damage over monster hit points
 
-Note: bullet and shell damage is taken as the minimum damage possible per round.
-For shells the damage is measured per pellet. This is a known common metric for
-both the shotgun and super shotgun.
+A shell damage of 1 indicates enough shells to kill each monster at least once,
+assuming the median amount of damage is inflicted.
 
-A bullet ratio of 1 means there are enough bullets to kill every monster at
-least once, assuming the round does the least amount of damage possible.
+Bullet damage is the median for the Chaingun, per tap of the trigger.
+Shell damage is the median for the shotgun, per shot.
+Rocket damage is the median for the rocket launcher, per rocket.
+Plasma damage is the median for the plasma gun, per shot.
 
-To assist the mapper in making sense of these values, a baseline
-of recommended values can be used for comparison.
-The default baseline is DOOM2, and can be changed with the -b option.
+To help put these numbers in perspective, they are compared to a baseline and
+dmon makes recommendations based on the outcome.
+The default baseline is DOOM2 and can be changed with the --baseline option.
 If a metric falls outside the baseline a recommendation is made.
+You can print the legend of these recommendations with the --legend option.
 
-Note: Berserk(100), Soulsphere(100) and Megasphere(200) items are
-NOT counted by default. To count these use the "--bonus" option.
+Note: Berserk(100), Soul sphere(100) and Megasphere(200) items are
+not counted by default. To count these use the "--bonus" option.
 
 Dmon uses Omgifol to read WAD files (see --license).
 
@@ -125,7 +126,7 @@ BULLET_DAMAGE = 20
 Shell damage.
 Taken as the median damage done by the shotgun per attack.
 This choice over the super shotgun is due to the commonality of the weapon
-across DOOM versions I and II. The difference in damage may be significant,
+across DOOM I and II. The difference in damage may be significant,
 but what is important is that the same metric is used consistently against
 baselines, providing a constant comparison.
 https://doomwiki.org/wiki/Shotgun#Data
