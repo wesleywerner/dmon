@@ -130,6 +130,10 @@ def to_tabular(wad_data, options, list_averages):
     pivoted_mode = options["--pivot"]
     output = ""
     
+    # Increase other columns for compare mode
+    if cmp_mode:
+        other_column_width = 12
+    
     # List of maps to print
     map_list = wad_data["map list"]
     
