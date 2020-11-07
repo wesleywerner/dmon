@@ -465,7 +465,7 @@ def format_digit(number, options):
     Format a number as integer of real.
     """
     if options["--fixed"] == True:
-        return str(round(float(number),1))
+        return str(round(float(number), 2))
     else:
         # If value rounds to zero: return a float with leading zero sliced.
         # Returns either 1 or 2 decimal float, depending which one is not 0.
@@ -474,11 +474,14 @@ def format_digit(number, options):
         value2 = round(number, 2)
         int_value = int(round(number))
         if int_value == 0 and value1 != 0.0:
-            # Rounded to 1 decimal has value
+            # Always display 1st-precision float instead of rounding down to 0
             return str(value1)[1:]
         elif int_value == 0 and value2 != 0.0:
-            # Rounded to 2 decimals has value
+            # Always display 2nd-precision float instead of rounding down to 0
             return str(value2)[1:]
+        elif int_value == 1 and number < 1:
+            # Always display float instead of rounding up to 1
+            return str(value1)[1:]
         else:
             return str(int_value)
 
